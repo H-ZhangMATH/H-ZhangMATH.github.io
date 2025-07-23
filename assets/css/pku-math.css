@@ -27,7 +27,7 @@ body {
 .pku-header {
     background: var(--pku-red);
     color: white;
-    padding: 0.5rem 0;
+    padding: 0.3rem 0;
     box-shadow: 0 2px 10px rgba(0,0,0,0.2);
     /* 移除以下两行 */
     /* position: sticky;
@@ -40,21 +40,21 @@ body {
     margin: 0 auto;
     padding: 0 20px;
     position: relative;
+    text-align: center;
 }
 
 /* 核心解决方案 */
 .header-center {
     display: inline-block; /* 使容器根据内容自适应 */
     position: relative;
-    left: 50%;
-    transform: translateX(-50%);
+    text-align: left;
 }
 
 .header-title {
     display: inline-block; /* 与按钮同行 */
     margin: 0;
-    font-size: 1.4rem;
-    line-height: 1.2;
+    font-size: 1rem;
+    line-height: 1;
     vertical-align: middle; /* 垂直对齐 */
 }
 
@@ -67,6 +67,7 @@ body {
 .pku-logo {
     font-weight: 700;
     color: var(--pku-gold);
+    font-size: 1rem; 
 }
 
 /* 导航菜单 */
@@ -144,8 +145,8 @@ nav a:hover {
     color: white;
     font-weight: bold;
     font-family: 'Noto Serif SC', serif;
-    font-size: 0.9rem; /* 减小字体大小 */
-    padding: 0.2rem 0.5rem;
+    font-size: 0.7rem; /* 减小字体大小 */
+    padding: 0.1rem 0.3rem;
     cursor: pointer;
     transition: all 0.3s;
     border-radius: 4px;
@@ -275,7 +276,6 @@ address a:hover {
 }
 .obfuscate::after {
     content: attr(data-user) "@" attr(data-domain);
-    color: var(--pku-gold);
 }
 
 
