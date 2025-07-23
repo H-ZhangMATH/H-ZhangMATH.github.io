@@ -1,10 +1,13 @@
 document.addEventListener('DOMContentLoaded', function() {
     const langButtons = document.querySelectorAll('.lang-btn');
     
-    // 初始化语言设置（尝试从本地存储获取，默认为中文）
+    // 初始化语言设置（尝试从本地存储获取，默认为英文）
     let currentLang = localStorage.getItem('preferredLang') || 'en';
     
-    // 设置初始激活按钮
+    // 首先移除所有按钮的active类
+    langButtons.forEach(btn => btn.classList.remove('active'));
+    
+    // 然后只激活当前语言的按钮
     document.querySelector(`.lang-btn[data-lang="${currentLang}"]`).classList.add('active');
     
     // 翻译函数
@@ -33,13 +36,15 @@ document.addEventListener('DOMContentLoaded', function() {
         
         currentLang = lang;
         localStorage.setItem('preferredLang', lang);
+        
+        // 更新按钮状态
+        langButtons.forEach(btn => btn.classList.remove('active'));
+        document.querySelector(`.lang-btn[data-lang="${lang}"]`).classList.add('active');
     }
     
     // 按钮点击事件
     langButtons.forEach(button => {
         button.addEventListener('click', function() {
-            langButtons.forEach(btn => btn.classList.remove('active'));
-            this.classList.add('active');
             const lang = this.getAttribute('data-lang');
             console.log('Switching to language:', lang);
             translatePage(lang);
