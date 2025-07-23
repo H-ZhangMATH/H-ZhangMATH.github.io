@@ -1,0 +1,287 @@
+/* 北大主题色 */
+:root {
+    --pku-red: #990000;
+    --pku-darkred: #7a0000;
+    --pku-lightred: #cc3333;
+    --pku-gold: #ffcc00;
+    --primary-color: #8C1515; /* 北大红 */
+    --secondary-color: #B31B1B; /* 深红色 */
+}
+
+body {
+    font-family: 'Noto Serif SC', serif;
+    line-height: 1.8;
+    color: #333;
+    background-color: #f9f9f9;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* 北大风格页眉 */
+.pku-header {
+    background: var(--pku-red);
+    color: white;
+    padding: 1rem 0;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.pku-logo {
+    font-weight: 700;
+    color: var(--pku-gold);
+}
+
+/* 导航菜单 */
+nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* 主菜单横向排列 */
+.nav-main {
+    display: flex;
+    gap: 1.5rem; /* 菜单项间距 */
+    align-items: center;
+    padding: 0.5rem 1rem;
+    background: var(--pku-darkred); /* 使用深红色背景 */
+    color: white;
+}
+
+nav li {
+    margin-right: 2rem;
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+    font-size: 1.1rem;
+    transition: all 0.3s;
+    padding: 0.5rem 0;
+}
+
+nav a:hover {
+    color: var(--pku-gold);
+    border-bottom: 2px solid var(--pku-gold);
+}
+
+/* 子菜单垂直排列 */
+.nav-submenu {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    margin-left: 1rem; /* 添加缩进表示层级 */
+    margin-top: 0.3rem;
+    background: rgba(255,255,255,0.1); /* 子菜单稍微不同的背景 */
+}
+
+/* 有子菜单的项添加指示图标 */
+.has-submenu > a::after {
+    content: " ▼";
+    font-size: 0.7em;
+    color: #666;
+}
+
+/* 按钮样式 */
+.btn {
+    display: inline-block;
+    background: var(--primary-color);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    text-decoration: none;
+    margin-top: 1rem;
+    transition: background 0.3s;
+}
+
+.btn:hover {
+    background: var(--secondary-color);
+    color: white;
+}
+
+/* 语言按钮样式 */
+.lang-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-weight: bold;
+    font-family: 'Noto Serif SC', serif;
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+    margin: 0 0.5rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    border-radius: 4px;
+}
+
+.lang-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.lang-btn.active {
+    background: rgba(255, 255, 255, 0.2);
+    border-bottom: 2px solid var(--pku-gold);
+}
+
+.pku-hero {
+    background: url('/assets/images/math-bg.jpg');
+    background-size: cover;
+    background-position: center;
+    color: white;
+    padding: 4rem 0;
+    text-align: center;
+    margin: 2rem 0;
+    border-radius: 5px;
+    
+    /* 图片比例 4:3 */
+    aspect-ratio: 4/3;
+    width: 100%;
+}
+
+.math-decoration {
+    font-size: 1.5rem;
+    margin-top: 2rem;
+    opacity: 0.9;
+}
+
+/* 研究领域卡片 */
+.research-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.research-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 5px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    border-top: 3px solid var(--pku-red);
+    transition: transform 0.3s;
+}
+
+.research-card:hover {
+    transform: translateY(-5px);
+}
+
+.math-preview {
+    color: var(--pku-red);
+    margin-top: 1rem;
+    font-size: 1.1rem;
+}
+
+/* 北大特色下划线 */
+.pku-underline {
+    position: relative;
+    padding-bottom: 0.5rem;
+}
+
+.pku-underline:after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 50%;
+    height: 3px;
+    background: var(--pku-red);
+}
+
+.research-card {
+    transition: all 0.3s ease;
+}
+
+.math-preview {
+    transition: transform 0.5s;
+}
+
+.research-card:hover .math-preview {
+    transform: scale(1.05);
+}
+
+.construction {
+    font-size: 0.8em;
+    color: #ff6b6b;
+    font-style: italic;
+    margin-left: 5px;
+}
+
+nav ul {
+    list-style-type: none;
+    padding-left: 20px;
+}
+
+nav ul ul {
+    padding-left: 30px;
+}
+
+.email {
+    unicode-bidi: bidi-override;
+    direction: rtl; /* Helps against simple email harvesters */
+}
+.obfuscate::after {
+    content: attr(data-user) "@" attr(data-domain);
+}
+
+.emoji {
+    font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", "Android Emoji", emoji;
+    display: inline-block;
+    margin: 0 2px;
+}
+
+.translatable {
+    transition: all 0.3s ease;
+}
+
+/* 正在翻译的动画效果 */
+.translatable.translating {
+    opacity: 0.5;
+    transform: translateY(5px);
+}
+
+/* 语言按钮激活状态增强 */
+.lang-btn.active {
+    background: rgba(255, 255, 255, 0.3) !important;
+    transform: scale(1.05);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+/* 子菜单翻译项样式 */
+.nav-submenu .translatable {
+    font-size: 0.95em;
+    padding: 0.3rem 0.5rem;
+}
+
+/* 页脚 */
+.pku-footer {
+    background: #222;
+    color: white;
+    padding: 2rem 0;
+    margin-top: 4rem;
+    text-align: center;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .nav-submenu {
+        margin-left: 0;
+        padding-left: 1rem;
+    }
+    
+    .has-submenu > a::after {
+        content: " →"; /* 在移动设备上使用箭头更直观 */
+    }
+}
+    
+    .pku-hero {
+        padding: 2rem 0;
+    }
+}
