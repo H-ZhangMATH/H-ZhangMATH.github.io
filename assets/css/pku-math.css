@@ -327,7 +327,6 @@ address a:hover {
     .has-submenu > a::after {
         content: " →"; /* 在移动设备上使用箭头更直观 */
     }
-}
 
 @media (max-width: 768px) {
     .header-title {
@@ -340,6 +339,35 @@ address a:hover {
         font-size: 0.8rem;
         padding: 0.1rem 0.3rem;
     }
-    .hero-content {
-        top: 10%; /* 移动端减少顶部间距 */
+    /* 新增 Hero 区域移动端样式 */
+    .pku-hero {
+        min-height: 200px; /* 调整高度 */
+        aspect-ratio: auto; /* 移除固定宽高比 */
+        padding-top: 20px; /* 调整顶部间距 */
+        background-size: cover; /* 确保背景图覆盖但不拉伸 */
     }
+
+    .hero-content {
+        width: 90%; /* 限制内容宽度 */
+        padding: 10px; /* 调整内边距 */
+    }
+
+    .hero-content p {
+        font-size: 1rem; /* 减小字体大小 */
+        margin: 8px 0; /* 调整间距 */
+        line-height: 1.4; /* 调整行高 */
+    }
+}
+
+@media (max-width: 480px) {
+    /* 更小屏幕的额外调整 */
+    .pku-hero {
+        min-height: 150px;
+        padding-top: 15px;
+    }
+
+    .hero-content p {
+        font-size: 0.9rem;
+        margin: 5px 0;
+    }
+}
