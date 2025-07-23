@@ -1,0 +1,1454 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>laln-1</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true,
+                packages: {'[+]': ['ams']}
+            },
+            loader: {load: ['[tex]/ams']},
+            options: {
+                skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+                ignoreHtmlClass: 'tex2jax_ignore',
+                processHtmlClass: 'tex2jax_process'
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        :root {
+            /* 北大红色系 */
+            --primary-color: #8C1515;        /* 北大红 */
+            --secondary-color: #B31B1B;      /* 深红色 */
+            --accent-color: #D7263D;         /* 强调红 */
+            --light-red: #F8E8E8;            /* 浅红色 */
+            --text-color: #333;
+            --bg-color: #F8F8F8;
+            --code-bg: #F8E8E8;              /* 浅红色背景 */
+            --border-color: #ddd;
+            --toc-bg: #F8E8E8;               /* 浅红色目录背景 */
+            --blockquote-bg: rgba(140, 21, 21, 0.1); /* 主色透明度10% */
+        }
+        
+        .dark-mode {
+            /* 暗色模式下的北大红主题 */
+            --primary-color: #7A0A0A;        /* 深红 */
+            --secondary-color: #9E1B1B;      /* 暗红色 */
+            --accent-color: #D7263D;         /* 强调红 */
+            --light-red: #2C1A1A;            /* 深红背景 */
+            --text-color: #e0e0e0;
+            --bg-color: #1a0a0a;             /* 深红背景 */
+            --code-bg: #2C1A1A;              /* 深红背景 */
+            --border-color: #5C3A3A;
+            --toc-bg: #2C1A1A;               /* 深红背景 */
+            --blockquote-bg: rgba(122, 10, 10, 0.2); /* 深红透明度20% */
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .container {
+            display: flex;
+            max-width: 1200px;
+            margin: 0 auto;
+            gap: 30px;
+        }
+        
+        #toc {
+            flex: 0 0 250px;
+            background: var(--toc-bg);
+            padding: 20px;
+            border-radius: 8px;
+            position: sticky;
+            top: 20px;
+            max-height: calc(100vh - 40px);
+            overflow-y: auto;
+        }
+        
+        .toc-title {
+            color: var(--primary-color);
+            margin-top: 0;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--secondary-color);
+            font-size: 20px;
+        }
+        
+        #toc ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        #toc li {
+            margin: 10px 0;
+        }
+        
+        #toc a {
+            text-decoration: none;
+            color: var(--text-color);
+            display: block;
+            padding: 8px 12px;
+            border-radius: 4px;
+            transition: all 0.2s;
+            font-size: 15px;
+        }
+        
+        #toc a:hover, #toc a.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        #content {
+            flex: 1;
+            padding: 30px;
+            background: var(--bg-color);
+            border-radius: 0 8px 8px 0;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+            max-width: var(--content-max-width);
+            border-left: 5px solid var(--primary-color);
+        }
+        
+        h1, h2, h3, h4 {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 8px;
+            scroll-margin-top: 100px;
+        }
+        
+        h1 { 
+            font-size: 28px; 
+            margin-top: 0;
+        }
+        h2 { font-size: 24px; }
+        h3 { font-size: 20px; }
+        h4 { font-size: 18px; }
+        
+        p, li, td, th {
+            max-width: var(--content-max-width);
+        }
+        
+        code {
+            background-color: var(--code-bg);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Fira Code', 'Consolas', monospace;
+        }
+        
+        pre {
+            background-color: var(--code-bg);
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            max-width: var(--content-max-width);
+        }
+        
+        pre code {
+            background: none;
+            padding: 0;
+        }
+        
+        blockquote {
+            border-left: 4px solid var(--primary-color);
+            background-color: var(--blockquote-bg);
+            padding: 15px 20px;
+            margin: 20px 0;
+            color: var(--text-color);
+            font-style: italic;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            z-index: 1000;
+            font-size: 15px;
+        }
+        
+        .highlight {
+            background-color: rgba(140, 21, 21, 0.25);
+            transition: background-color 0.5s ease;
+            border-left: 3px solid var(--accent-color);
+            padding: 10px 15px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            max-width: var(--content-max-width);
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        th {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+        
+        tr:hover {
+            background-color: rgba(179, 27, 27, 0.1);
+        }
+        
+        .math {
+            overflow-x: auto;
+            max-width: var(--content-max-width);
+        }
+        
+        .MJXc-display {
+            margin: 1.5em 0 !important;
+            overflow-x: auto;
+            max-width: var(--content-max-width);
+        }
+        
+        /* 数学公式对齐样式 */
+        .MathJax_Display {
+            overflow-x: auto;
+            overflow-y: hidden;
+            text-align: center;
+            margin: 1.5em 0 !important;
+        }
+        
+        /* 矩阵样式 */
+        .mjx-chtml {
+            font-size: 110% !important;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 1100px) {
+            .container {
+                flex-direction: column;
+                max-width: 800px;
+            }
+            #toc {
+                position: relative;
+                max-height: 350px;
+                margin-bottom: 30px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+            #content {
+                padding: 20px;
+            }
+            .container {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="theme-toggle" onclick="toggleTheme()">🌙 切换暗色模式</button>
+    
+    <div class="container">
+        <div id="toc"><h3 class="toc-title">📚 内容目录</h3><ul><li style="margin-left:10px"><a href="#section-2-1-" class="toc-item">2.1 标量、阿贝尔群、向量空间与数学结构</a></li><li style="margin-left:20px"><a href="#section-2-1-1-field-" class="toc-item">2.1.1 什么是标量（纯量）与标量域（体，Field）</a></li><li style="margin-left:20px"><a href="#section-2-1-2-" class="toc-item">2.1.2什么是向量、向量空间</a></li><li style="margin-left:20px"><a href="#section-2-1-3-" class="toc-item">2.1.3 向量空间的定义</a></li><li style="margin-left:30px"><a href="#section-2-1-3-1-" class="toc-item">2.1.3.1 封闭性</a></li><li style="margin-left:30px"><a href="#section-2-3-1-2-8-axioms-" class="toc-item">2.3.1.2 向量空间：满足8条公理（Axioms）的数学结构</a></li><li style="margin-left:40px"><a href="#section--" class="toc-item">关于群与阿贝尔群的拓展</a></li><li style="margin-left:40px"><a href="#section--field-" class="toc-item">关于域(Field)的拓展</a></li><li style="margin-left:20px"><a href="#section-2-1-4-" class="toc-item">2.1.4 简单的向量空间例子</a></li><li style="margin-left:20px"><a href="#section-2-1-5-arithmetic-" class="toc-item">2.1.5 向量算术（arithmetic）</a></li><li style="margin-left:10px"><a href="#section-2-2-" class="toc-item">2.2 代数结构、合成法则、子空间、数学公理化体系结构</a></li><li style="margin-left:20px"><a href="#section-2-2-1-" class="toc-item">2.2.1 回顾向量空间</a></li><li style="margin-left:30px"><a href="#section-2-2-1-1-" class="toc-item">2.2.1.1 抽象的数学结构</a></li><li style="margin-left:30px"><a href="#section-2-2-1-2-" class="toc-item">2.2.1.2 合成法则</a></li><li style="margin-left:30px"><a href="#section-2-2-1-3-" class="toc-item">2.2.1.3 具体的结构：向量空间</a></li><li style="margin-left:30px"><a href="#section--2-2-1-4-" class="toc-item">$*$ 2.2.1.4 内合成法则与外合成法则</a></li><li style="margin-left:20px"><a href="#section-2-2-2-subspace-" class="toc-item">2.2.2 子空间(Subspace)</a></li><li style="margin-left:30px"><a href="#section-2-2-2-0-" class="toc-item">2.2.2.0 $*$ 公理化体系框架</a></li><li style="margin-left:30px"><a href="#section-2-2-2-1-definition-" class="toc-item">2.2.2.1 子空间定义(Definition)</a></li><li style="margin-left:30px"><a href="#section-2-2-2-2-" class="toc-item">2.2.2.2 向量子空间引理</a></li><li style="margin-left:40px"><a href="#section--vacuous-truth" class="toc-item">补充：Vacuous Truth</a></li><li style="margin-left:30px"><a href="#section-2-2-2-3-" class="toc-item">2.2.2.3 向量子空间引理证明和例子</a></li><li style="margin-left:30px"><a href="#section-2-2-2-4-directsum-" class="toc-item">2.2.2.4 子空间的和与直和（directsum）$⊕$</a></li><li style="margin-left:10px"><a href="#section-2-3-" class="toc-item">2.3 线性组合、张成空间、线性方程组与矩阵、高斯消元法、生成集、线性相关、基</a></li><li style="margin-left:20px"><a href="#section-2-3-1-linear-combination-span-" class="toc-item">2.3.1 线性组合(linear combination)、张成空间(span)</a></li><li style="margin-left:30px"><a href="#section-2-3-1-1-" class="toc-item">2.3.1.1 尝试构建子空间：从单向量到多向量</a></li><li style="margin-left:30px"><a href="#section-2-3-1-2-" class="toc-item">2.3.1.2 线性组合与张成空间定义</a></li><li style="margin-left:30px"><a href="#section-2-3-1-3-" class="toc-item">2.3.1.3 张成空间性质定理</a></li><li style="margin-left:20px"><a href="#section-2-3-2-linear-system-of-equations-matrix-gaussian-elimination-" class="toc-item">2.3.2 线性方程组(linear system of equations) 、矩阵(matrix)、高斯消元法(Gaussian elimination)</a></li><li style="margin-left:30px"><a href="#section-2-3-2-1-" class="toc-item">2.3.2.1 一个经济模型</a></li><li style="margin-left:30px"><a href="#section-2-3-2-2-" class="toc-item">2.3.2.2 线性方程组与矩阵</a></li><li style="margin-left:40px"><a href="#section--" class="toc-item">^注:矩阵与增广矩阵</a></li><li style="margin-left:30px"><a href="#section-2-3-2-3-" class="toc-item">2.3.2.3 高斯消元法</a></li><li style="margin-left:30px"><a href="#section-2-3-2-4-" class="toc-item">2.3.2.4 运用高斯消元法：判断线性相关性、向量是否在张成空间中</a></li><li style="margin-left:20px"><a href="#section-2-3-3-spanning-generating-sets-" class="toc-item">2.3.3 生成集(spanning/generating sets)、线性相关与无关</a></li><li style="margin-left:30px"><a href="#section-2-3-3-1-" class="toc-item">2.3.3.1 生成集</a></li><li style="margin-left:30px"><a href="#section-2-3-3-2-" class="toc-item">2.3.3.2 线性相关的定义</a></li><li style="margin-left:30px"><a href="#section-2-3-3-3-" class="toc-item">2.3.3.3 线性相关定理</a></li><li style="margin-left:20px"><a href="#section-2-3-4-" class="toc-item">2.3.4 基和基的引理</a></li></ul></div>
+        <div id="content">
+            <h1 id="section-2-1-">2.1 标量、阿贝尔群、向量空间与数学结构</h1>
+<p>本篇笔记英文内容皆编选自上期笔记附录提到的Terence Tao的<strong><em>LNLA</em></strong>。</p>
+<h2 id="section-2-1-1-field-">2.1.1 什么是标量（纯量）与标量域（体，Field）</h2>
+<blockquote>
+<p>Informally, a scalar is any quantity which can be described by a single number. The set of all scalars is referred to as the field of scalars; it is usually just ( R ), the field of real numbers.Any two scalars can be added, subtracted, or multiplied together to form another scalar.</p>
+<p>Scalars obey various rules of algebra, for instance $x+y$ is always equal to $y+x$, and $x \times (y+z)$ is equal to $x \times y + x \times z$.</p>
+</blockquote>
+<p>通过上文节选部分得到：标量是可用单一数值描述的任意量，所有标量的集合称为标量域，通常它就是实数域 $R$，任意两个标量可以相加、相减或相乘，生成另一个标量，并且标量遵循多种代数规则（下文将会简单拓展域的概念，更多内容将会在抽象代数部分描述）。</p>
+<h2 id="section-2-1-2-">2.1.2什么是向量、向量空间</h2>
+<blockquote>
+<p>Informally, a vector is any member of a vector space; a vector space is any class of objects which can be added together, or multiplied with scalars. As with scalars, vectors must obey certain rules of algebra.</p>
+<p>The vector space $\mathbf{R}^{3}$ is the space of all vectors of the form $(x,y,z)$, where $x$, $y$, $z$ are real numbers: $\mathbf{R}^{3} := \{(x,y,z) : x,y,z \in \mathbf{R}\}$. Addition and scalar multiplication proceeds similar to $\mathbf{R}^{2}$: $(1,2,3)+(4,5,6)=(5,7,9)$, and $4 \times (1,2,3)=(4,8,12)$. However, addition of a vector in $\mathbf{R}^{2}$ to a vector in $\mathbf{R}^{3}$ is undefined; $(1,2)+(3,4,5)$ doesn't make sense.</p>
+</blockquote>
+<p>向量是向量空间中的任意成员；向量空间是能够相加或与标量相乘的对象的集合。与标量类似，向量也必须遵循特定的代数规则。例如$\mathbf{R}^{2}$和$\mathbf{R}^{3}$是向量空间，可以通过分别相加分量来将两个选自同一个向量空间中的向量相加（但是选取不同的向量空间如分别取$\mathbf{R}^{2}$和$\mathbf{R}^{3}$中的一个向量相加是无意义的），也可以通过分别相乘分量来将标量与其中的向量相乘。</p>
+<h2 id="section-2-1-3-">2.1.3 向量空间的定义</h2>
+<blockquote>
+<p><strong>Definition of a vector space</strong>
+<strong>Definition.</strong> A <strong>vector space</strong> is any collection $V$ of objects (called <strong>vectors</strong>) for which two operations can be performed:</p>
+<ul>
+<li><strong>Vector addition</strong>, which takes two vectors $v$ and $w$ in $V$ and returns another vector $v+w$ in $V$. (Thus $V$ must be closed under addition).</li>
+<li><strong>Scalar multiplication</strong>, which takes a scalar $c$ in $\mathbf{R}$ and a vector $v$ in $V$, and returns another vector $cv$ in $V$. (Thus $V$ must be closed under scalar multiplication).</li>
+</ul>
+<p>Furthermore, for $V$ to be a vector space, the following properties must be satisfied:</p>
+<ul>
+<li>(I. Addition is commutative) For all $v,w\in V$, $v+w=w+v$.</li>
+<li>
+<p>(II. Addition is associative) For all $u,$ $v,w\in V$, $u+(v+w)=(u+v)+w$.</p>
+</li>
+<li>
+<p>(III. Additive identity) There is a vector $0\in V$, called the <strong>zero vector</strong>, such that $0+v=v$ for all $v\in V$.</p>
+</li>
+<li>
+<p>(IV. Additive inverse) For each vector $v\in V$, there is a vector $-v\in V$, called the <strong>additive inverse</strong> of $v$, such that $-v+v=0$.</p>
+</li>
+<li>
+<p>(V. Multiplicative identity) The scalar 1 has the property that $1v=v$ for all $v\in V$.</p>
+</li>
+<li>
+<p>(VI. Multiplication is associative) For any scalars $a,b\in\mathbf{R}$ and any vector $v\in V$, we have $a(bv)=(ab)v$.</p>
+</li>
+<li>
+<p>(VII. Multiplication is linear) For any scalar $a\in\mathbf{R}$ and any vectors $v,w\in V$, we have $a(v+w)=av+aw$.</p>
+</li>
+<li>(VIII. Multiplication distributes over addition) For any scalars $a,b\in\mathbf{R}$ and any vector $v\in V$, we have $(a+b)v=av+bv$.</li>
+</ul>
+</blockquote>
+<h3 id="section-2-1-3-1-">2.1.3.1 封闭性</h3>
+<p>我们首先了解一下什么是“be closed under”，通俗来讲就是封闭性——要求在同一空间内的两个对象运算后的结果也在这一空间内。那么，可以用更一般的语言来描述上述两个运算的封闭性：</p>
+<p>在向量空间的定义中，<strong>封闭性</strong>是保证向量空间在加法和数乘运算下保持“自封闭”的关键性质，具体分为以下两部分：</p>
+<p><strong>1. 加法封闭性</strong>
+对于向量空间 $V$ 中的任意两个向量 $\mathbf{u}$ 和 $\mathbf{v}$，它们的和仍然属于 $V$：
+$$
+\mathbf{u} \in V,\ \mathbf{v} \in V \implies \mathbf{u} + \mathbf{v} \in V
+$$
+<strong>2. 数乘封闭性</strong>
+对于任意向量 $\mathbf{u} \in V$ 和标量 $\alpha \in \mathbb{F}$（其中 $\mathbb{F}$ 是标量域，通常为实数域 $\mathbb{R}$ 或复数域 $\mathbb{C}$），数乘结果仍然属于 $V$：
+$$
+\mathbf{u} \in V,\ \alpha \in \mathbb{F} \implies \alpha \mathbf{u} \in V
+$$
+<strong>数学表述：</strong>集合 $V$ 在域 $\mathbb{F}$ 上构成向量空间，当且仅当满足：</p>
+<ul>
+<li>
+<p>加法封闭性：$\forall \mathbf{u}, \mathbf{v} \in V$，有 $\mathbf{u} + \mathbf{v} \in V$</p>
+</li>
+<li>
+<p>数乘封闭性：$\forall \mathbf{u} \in V, \forall \alpha \in \mathbb{F}$，有 $\alpha \mathbf{u} \in V$
+(此处的域 $\mathbb{F}$在本课程中一般没有意外就是实数域$\mathbf{R}$, 这个是代码mathbf{R},可能也会写成代码mathbb{R}的$\mathbb{R}$。）</p>
+</li>
+</ul>
+<h3 id="section-2-3-1-2-8-axioms-">2.3.1.2 向量空间：满足8条公理（Axioms）的数学结构</h3>
+<p>布尔巴基学派（Bourbaki）在阐述向量空间（线性空间）时，采用严格的公理化方法，从初学角度来看，可以理解成：只要满足给定公理体系的对象就是所定义的数学结构，向量空间和下面提到的群、阿贝尔群（将在抽象代数课程中更加一般地进行描述）都是这种结构。先简单介绍一下群（拓展内容，可以跳过）：</p>
+<hr/>
+<h4 id="section--">关于群与阿贝尔群的拓展</h4>
+<p><strong>群(Group)</strong>,在布尔巴基的公理化体系中，一个<strong>群</strong> $(G, \cdot)$ 是一个集合 $G$ 配上一个二元运算 $\cdot: G \times G \to G$ 满足以下公理：</p>
+<ol>
+<li>
+<p><strong>结合律</strong> (Associativity):
+   $$ \forall a, b, c \in G, \quad (a \cdot b) \cdot c = a \cdot (b \cdot c) $$</p>
+</li>
+<li>
+<p><strong>单位元存在</strong> (Identity element):
+   $$ \exists e \in G \text{ 使得 } \forall a \in G, \quad e \cdot a = a \cdot e = a $$</p>
+</li>
+<li>
+<p><strong>逆元存在</strong> (Inverse element):
+   $$ \forall a \in G, \exists b \in G \text{ 使得 } a \cdot b = b \cdot a = e $$</p>
+</li>
+</ol>
+<blockquote>
+<p><em>为什么一般群的定义没使用我们更熟悉的加法符号$+$呢?留下疑惑，后续我们将了解乘法$\cdot$是非交换的。而强调交换性的，与我们熟悉的数系加法一致的，正是下面将要引出的阿贝尔群。</em></p>
+</blockquote>
+<p><strong>阿贝尔群 (Abelian Group)</strong>,一个群 $(G, \cdot)$ 如果还满足以下附加公理，则称为<strong>阿贝尔群</strong>或<strong>交换群</strong>：</p>
+<p><strong>交换律</strong> (Commutativity):
+   $$ \forall a, b \in G, \quad a \cdot b = b \cdot a $$</p>
+<p>在阿贝尔群中，二元运算常记为 $+$，此时：</p>
+<ul>
+<li>
+<p>单位元记为 $0$</p>
+</li>
+<li>
+<p>逆元记为 $-a$</p>
+</li>
+<li>
+<p>运算称为<strong>加法运算</strong></p>
+</li>
+</ul>
+<p>简单介绍完阿贝尔群，接下来再简单拓展一下域。</p>
+<hr/>
+<h4 id="section--field-">关于域(Field)的拓展</h4>
+<p><strong>域</strong> 是一个代数结构，记作 $(F, +, \cdot)$，其中 $F$ 是一个集合，$+$ 和 $\cdot$ 是定义在 $F$ 上的两种二元运算（分别称为加法和乘法），并满足以下公理：</p>
+<p><strong>1.加法公理</strong>  $(F, +)$ 构成一个交换群（阿贝尔群）：</p>
+<ol>
+<li>
+<p>封闭性：$\forall a,b \in F, a+b \in F$</p>
+</li>
+<li>
+<p>结合律：$\forall a,b,c \in F, (a+b)+c = a+(b+c)$</p>
+</li>
+<li>
+<p>加法零元/恒等元：$\exists 0 \in F, \forall a \in F, a+0 = a$</p>
+</li>
+<li>
+<p>加法逆元：$\forall a \in F, \exists (-a) \in F, a+(-a) = 0$</p>
+</li>
+<li>
+<p>交换律：$\forall a,b \in F, a+b = b+a$</p>
+</li>
+</ol>
+<p><strong>2.乘法公理</strong> 
+ $(F \setminus {0}, \cdot)$ 构成一个交换群：</p>
+<ol>
+<li>
+<p>封闭性：$\forall a,b \in F \setminus {0}, a \cdot b \in F \setminus {0}$</p>
+</li>
+<li>
+<p>结合律：$\forall a,b,c \in F, (a \cdot b) \cdot c = a \cdot (b \cdot c)$</p>
+</li>
+<li>
+<p>乘法单位元/恒等元：$\exists 1 \in F \setminus {0}, \forall a \in F, a \cdot 1 = a$</p>
+</li>
+<li>
+<p>乘法逆元：$\forall a \in F \setminus {0}, \exists a^{-1} \in F, a \cdot a^{-1} = 1$</p>
+</li>
+<li>
+<p>交换律：$\forall a,b \in F, a \cdot b = b \cdot a$</p>
+</li>
+</ol>
+<p><strong>3.分配律</strong>
+乘法对加法满足分配律：
+$∀a,b,c∈F,a⋅(b+c)=a⋅b+a⋅c$</p>
+<p>(加法对乘法的分配律在域中不成立！)</p>
+<hr/>
+<p>接着，回到向量空间，在布尔巴基的体系下，定义在域$\mathbb{F}$上的向量空间$V$需要满足以下公理：</p>
+<p><strong>1. 加法公理（$V$ 对加法构成阿贝尔群）</strong></p>
+<p>向量加法 $+: V \times V \to V$ 满足：</p>
+<ol>
+<li>
+<p><strong>封闭性</strong>：<br/>
+$\forall \mathbf{u}, \mathbf{v} \in V,\ \mathbf{u} + \mathbf{v} \in V$</p>
+</li>
+<li>
+<p><strong>结合律</strong>：<br/>
+$\forall \mathbf{u}, \mathbf{v}, \mathbf{w} \in V,\ (\mathbf{u} + \mathbf{v}) + \mathbf{w} = \mathbf{u} + (\mathbf{v} + \mathbf{w})$</p>
+</li>
+<li>
+<p><strong>零元/恒等元</strong>：<br/>
+$\exists \mathbf{0} \in V,\ \forall \mathbf{v} \in V,\ \mathbf{v} + \mathbf{0} = \mathbf{v}$</p>
+</li>
+<li>
+<p><strong>逆元</strong>：<br/>
+$\forall \mathbf{v} \in V,\ \exists -\mathbf{v} \in V,\ \mathbf{v} + (-\mathbf{v}) = \mathbf{0}$</p>
+</li>
+<li>
+<p><strong>交换律</strong>：<br/>
+$\forall \mathbf{u}, \mathbf{v} \in V,\ \mathbf{u} + \mathbf{v} = \mathbf{v} + \mathbf{u}$</p>
+</li>
+</ol>
+<hr/>
+<p><strong>2. 标量乘法公理（与域 $\mathbb{F}$ 的兼容）</strong></p>
+<p>标量乘法 $\cdot: \mathbb{F} \times V \to V$ 满足：</p>
+<ol>
+<li>
+<p><strong>封闭性</strong>：<br/>
+$\forall \alpha \in \mathbb{F}, \forall \mathbf{v} \in V,\ \alpha \cdot \mathbf{v} \in V$</p>
+</li>
+<li>
+<p><strong>单位元/恒等元</strong>：<br/>
+$\forall \mathbf{v} \in V,\ 1 \cdot \mathbf{v} = \mathbf{v}$（其中 $1$ 是 $\mathbb{F}$ 的乘法单位元）</p>
+</li>
+<li>
+<p><strong>分配律（向量分配律）</strong>：<br/>
+$\forall \alpha \in \mathbb{F}, \forall \mathbf{u}, \mathbf{v} \in V,\ \alpha \cdot (\mathbf{u} + \mathbf{v}) = \alpha \cdot \mathbf{u} + \alpha \cdot \mathbf{v}$</p>
+</li>
+<li>
+<p><strong>分配律（标量分配律）</strong>：<br/>
+$\forall \alpha, \beta \in \mathbb{F}, \forall \mathbf{v} \in V,\ (\alpha + \beta) \cdot \mathbf{v} = \alpha \cdot \mathbf{v} + \beta \cdot \mathbf{v}$</p>
+</li>
+<li>
+<p><strong>结合律（标量乘法）</strong>：<br/>
+$\forall \alpha, \beta \in \mathbb{F}, \forall \mathbf{v} \in V,\ \alpha \cdot (\beta \cdot \mathbf{v}) = (\alpha \beta) \cdot \mathbf{v}$</p>
+</li>
+</ol>
+<p><strong>公理总结</strong></p>
+<ol>
+<li>
+<p>加法公理：5条（构成阿贝尔群）</p>
+</li>
+<li>
+<p>标量乘法公理：5条</p>
+</li>
+<li>
+<p><strong>总计</strong>：通常称为8条（将封闭性视为运算定义的固有属性而非独立公理而隐含。如范德瓦尔登的《代数学》也常将封闭性视为“运算的自然性质”，不列为独立公理。以下做简单补充。）</p>
+</li>
+</ol>
+<hr/>
+<p><strong>补充：</strong>两个封闭性直接体现在运算的定义当中</p>
+<p><strong>向量加法的封闭性</strong></p>
+<p>向量加法定义为映射：</p>
+<p>$$ + : V \times V \to V $$</p>
+<p>这个定义表示：</p>
+<ul>
+<li>
+<p>输入：任意两个向量 $\mathbf{u}, \mathbf{v} \in V$</p>
+</li>
+<li>
+<p>输出：它们的和 $\mathbf{u} + \mathbf{v}$ 必须属于 $V$</p>
+</li>
+</ul>
+<p>即：</p>
+<p>$$ \forall \mathbf{u}, \mathbf{v} \in V, \mathbf{u} + \mathbf{v} \in V $$</p>
+<p><strong>标量乘法的封闭性</strong></p>
+<p>标量乘法定义为映射：</p>
+<p>$$ \cdot : \mathbb{F} \times V \to V $$</p>
+<p>这个定义表示：</p>
+<ul>
+<li>
+<p>输入：标量 $\alpha \in \mathbb{F}$ 和向量 $\mathbf{v} \in V$</p>
+</li>
+<li>
+<p>输出：数乘结果 $\alpha \mathbf{v}$ 必须属于 $V$</p>
+</li>
+</ul>
+<p>即：</p>
+<p>$$ \forall \alpha \in \mathbb{F}, \forall \mathbf{v} \in V, \alpha \mathbf{v} \in V $$</p>
+<ul>
+<li>映射定义 $A \times B \to C$ 本身就保证了运算结果必定在 $C$ 中，即$ \cdot : \mathbb{F} \times V \to V $和$ \cdot : \mathbb{F} \times V \to V $也保证了运算结果必然在$V$中，因此封闭性不需要作为独立公理列出。后续或许有机会了解这种处理的好处：</li>
+</ul>
+<p>结构性优先：强调向量空间的代数结构（阿贝尔群+标量作用），而非运算的技术性细节。</p>
+<p>避免冗余：封闭性在绝大多数情况下是运算定义的必然结果，单独列出反而显得重复。</p>
+<p>与<strong>范畴论</strong>兼容：在更高阶的数学框架中，封闭性由<strong>态射（morphism）</strong> 的定义天然保证。</p>
+<hr/>
+<h2 id="section-2-1-4-">2.1.4 简单的向量空间例子</h2>
+<blockquote>
+<p>A philosophical point: we never say exactly what vectors are, only what vectors do. This is an example of abstraction, which appears everywhere in mathematics (but especially in algebra): the exact substance of an object is not important, only its properties and functions. </p>
+<p>(For instance, when using the number "three" in mathematics, it is unimportant whether we refer to three rocks, three sheep, or whatever; what is important is how to add, multiply, and otherwise manipulate these numbers, and what properties these operations have). </p>
+<p>This is tremendously powerful: it means that we can use a single theory (linear algebra) to deal with many very different subjects (physical vectors, population vectors in biology, portfolio vectors in finance, probability distributions in probability, functions in analysis, etc.). </p>
+<p>[A similar philosophy underlies "object-oriented programming" in computer science.] </p>
+</blockquote>
+<p>如上述，正如数学上的3是3只羊、3个石头还是其它并不重要，抽象的力量可以将不同的对象用同样的理论处理，向量到底是什么也不必深究，只需在意它抽象的性质。同样的，从基础视角来看，满足上文8条公理的东西就是向量空间，是一个可以在其它领域抽象得来的数学结构。例如上文的$\mathbf{R}^{2}$和$\mathbf{R}^{3}$就是常见的向量空间，也可以大胆想象其它例子，如：一个<strong>零向量</strong>、标量域（在上文域的拓展中可以很明显了解到这是一个向量空间）、某些的方程、数列、多项式。以下简单介绍一个例子。</p>
+<blockquote>
+<p><strong>将$n$-元组看作向量。</strong> 对于任意整数$n\geq 1$，向量空间$\mathbf{R}^{n}$定义为所有实数$n$-元组$(x_{1},x_{2},\ldots,x_{n})$构成的空间。这些是有序的$n$-元组，例如$(3,4)$与$(4,3)$是不同的；两个向量$(x_{1},x_{2},\ldots,x_{n})$和$(y_{1},y_{2},\ldots,y_{n})$相等当且仅当$x_{1}=y_{1}$，$x_{2}=y_{2}$，……，$x_{n}=y_{n}$。将向量的加法定义为 $(x_{1},x_{2},\ldots,x_{n})+(y_{1},y_{2},\ldots,y_{n}):=(x_{1}+y_{1},x_{2}+y_{2}, \ldots,x_{n}+y_{n})$ ，
+标量乘法定义为 $c(x_{1},x_{2},\ldots,x_{n}):=(cx_{1},cx_{2},\ldots,cx_{n}).$ 零向量为 $0:=(0,0,\ldots,0)$且加法逆元由以下方式给出：<br/>
+$-(x_{1},x_{2},\ldots,x_{n}):=(-x_{1},-x_{2},\ldots,-x_{n}).$  </p>
+</blockquote>
+<p>向量空间公理可以在$\mathbf{R}^{n}$中验证，但过程繁琐。这里我们仅验证一条公理，即公理VIII：$(a+b)v=av+bv$。</p>
+<blockquote>
+<p>我们可以将向量$v$表示为$v:=(x_{1},x_{2},\ldots,x_{n})$。左边为$(a+b)v=(a+b)(x_{1},x_{2},\ldots,x_{n})=((a+b)x_{1},(a+b)x_{2},\ldots,(a+b)x_{n})$而右边为$av+bv =a(x_{1},x_{2},\ldots,x_{n})+b(x_{1},x_{2},\ldots,x_{n})$<br/>
+$=(ax_{1},ax_{2},\ldots,ax_{n})+(bx_{1},bx_{2},\ldots,bx_{n})$<br/>
+$=(ax_{1}+bx_{1},ax_{2}+bx_{2},\ldots,ax_{n}+bx_{n})$<br/>
+两边相等，因为对于每个$j=1,2,\ldots,n$，有$(a+b)x_{j}=ax_{j}+bx_{j}$。  </p>
+</blockquote>
+<p>再简单介绍一下非向量空间的例子：</p>
+<blockquote>
+<ul>
+<li>
+<p><strong>正实数轴。</strong> 正实数空间 $\mathbf{R}^{+}$ 对加法封闭，并满足向量空间的大多数规则，但它不是一个向量空间，因为无法用负数标量进行乘法运算（不封闭）。（此外，它也不包含零向量。）</p>
+</li>
+<li>
+<p><strong>单项式:  $ k x ^ { n } ( k \neq 0 \, n \in \mathbb{N} )$ 。</strong> 由单项式 $1,x,x^{2},x^{3},\ldots$ 构成的空间不形成向量空间——它对加法或标量乘法不封闭。（单项式系数不为0不含零使得数乘运算不封闭，同时加法运算结果可能成为多项式也并不封闭）</p>
+</li>
+</ul>
+</blockquote>
+<h2 id="section-2-1-5-arithmetic-">2.1.5 向量算术（arithmetic）</h2>
+<p>向量空间8条公理可用于推导向量运算中其他常见的法则。例如：</p>
+<blockquote>
+<ul>
+<li><strong>Vector cancellation law (消去律)</strong> </li>
+</ul>
+<p>If $u,v,w$ are vectors such that $u+v=u+w$, then $v=w$.</p>
+</blockquote>
+<p><strong>Proof:</strong>  Since $u$ is a vector, we have an additive inverse $-u$ such that $-u+u=0$, by <em>axiom IV（加法逆元）</em>. Now we add $-u$ to both sides of $u+v=u+w$ : $-u+(u+v)=-u+(u+w). $ Now use <em>axiom II（结合律）</em>: $(-u+u)+v$ $=(-u+u)+w$ then <em>axiom IV（加法逆元）</em>: $0+v=0+w$ then <em>axiom III（加法零元）</em>: $v=w$.</p>
+<blockquote>
+<p>$0\mathbf{v} = \mathbf{0}$</p>
+</blockquote>
+<p>$0\mathbf{v} = (0+0)\mathbf{v}$ （加法零元）$= 0\mathbf{v} + 0\mathbf{v}$ （标量分配律）两边加$-0\mathbf{v}$得$\mathbf{0} = 0\mathbf{v}$ （加法逆元）</p>
+<p><strong>关键操作</strong>：等式两边加$-0v$<br/>
+   $$
+   \begin{align*}
+   0v + (-0v) &amp;= (0v + 0v) + (-0v) \\
+   0 &amp;= 0v + (0v + (-0v)) \quad \text{（结合律）} \\
+   0 &amp;= 0v + 0 \quad \text{（加法逆元）} \\
+   0 &amp;= 0v \quad \text{（加法零元）}
+   \end{align*}
+   $$
+   → 严格使用了向量空间的：<br/>
+   - <em>加法结合律</em><br/>
+   - <em>加法逆元</em>（$v + (-v) = 0$）<br/>
+   - <em>加法零元</em>（$v + 0 = v$）</p>
+<blockquote>
+<p>$(-1)\mathbf{v} = -\mathbf{v}$ </p>
+</blockquote>
+<p>$\mathbf{v} + (-1)\mathbf{v} = (1+(-1)\mathbf{v})$（标量分配律）$=0\mathbf{v} = \mathbf{0}$ （已证$0\mathbf{v}=\mathbf{0}$）故$(-1)\mathbf{v}$是$\mathbf{v}$的逆元 （逆元唯一性,见补充证明）</p>
+<blockquote>
+<p>$-(\mathbf{v}+\mathbf{w}) = (-\mathbf{v})+(-\mathbf{w})$</p>
+</blockquote>
+<p>$(\mathbf{v}+\mathbf{w})+[(-\mathbf{v})+(-\mathbf{w})]$ $= (\mathbf{v}+(-\mathbf{v}))+(\mathbf{w}+(-\mathbf{w}))$（加法交换结合律）$= \mathbf{0}+\mathbf{0}$（加法逆元）$ = \mathbf{0}$ （加法零元）</p>
+<blockquote>
+<p>$a\mathbf{0} = \mathbf{0}$</p>
+</blockquote>
+<p>$a\mathbf{0} = a(\mathbf{0}+\mathbf{0})$ （加法零元）$= a\mathbf{0} + a\mathbf{0}$（向量分配律）两边加$-a\mathbf{0}$得$\mathbf{0} = a\mathbf{0}$ （加法逆元）</p>
+<blockquote>
+<p>$a(-x) = (-a)x = -ax$</p>
+</blockquote>
+<p>证明 $a(-x) = -ax$：
+$a(-x) + ax = a(-x + x) = a \cdot 0 = 0$（标量乘法分配律→加法逆元→零乘性质）$\Rightarrow a(-x) = -ax$</p>
+<p>证明 $(-a)x = -ax$：
+$(-a)x + ax = (-a + a)x = 0 \cdot x = 0$（标量乘法分配律→加法逆元→零乘性质）$\Rightarrow (-a)x = -ax$</p>
+<blockquote>
+<p>补充：恒等元和逆元唯一性</p>
+<p>(拓展自<strong><em>Linear Algebra Done Right</em></strong>）</p>
+</blockquote>
+<p><strong>加法恒等元唯一性</strong>：设$0_1,0_2$均为零向量，则$0_1=0_1+0_2=0_2$（加法零元）</p>
+<p><strong>标量乘法恒等元唯一性</strong>：标量域中$1_1=1_1\cdot1_2=1_2$（乘法单位元）</p>
+<p><strong>加法逆元唯一性</strong>：对$\mathbf{v}\in V$，设$\mathbf{w}_1,\mathbf{w}_2$为逆元，则$\mathbf{w}_1=\mathbf{w}_1+0$ $=\mathbf{w}_1+(\mathbf{v}+\mathbf{w}_2)$ $=(\mathbf{w}_1+\mathbf{v})+\mathbf{w}_2$ $=0+\mathbf{w}_2=\mathbf{w}_2$（加法结合律+加法逆元）</p>
+<p><strong>标量乘法逆元唯一性</strong>：对$a\in F\backslash{0}$，设$b_1,b_2$为逆元，则$b_1=b_1\cdot1=b_1(a\cdot b_2)$ $=(b_1\cdot a)b_2$ $=1\cdot b_2=b_2$（乘法结合律+乘法逆元）</p>
+<hr/>
+<p>（更加基础的 <strong>集合论</strong> 和 <strong>范畴论</strong> 将不会在本课程中详细讲述，它们或许会在将来安排为独立课程讲解。只需要用较少的集合知识就能够学习本课程。或许这是我的一个“<em>急功近利</em> ”的表现，对系统学习数学，是阻滞还是促进并不预知，但我们先摸鱼🐟再说吧！）</p>
+<h1 id="section-2-2-">2.2 代数结构、合成法则、子空间、数学公理化体系结构</h1>
+<h2 id="section-2-2-1-">2.2.1 回顾向量空间</h2>
+<h3 id="section-2-2-1-1-">2.2.1.1 抽象的数学结构</h3>
+<blockquote>
+<p><strong><em>J.Quinet</em></strong> (法国）的代数教材写道：结构的概念是数学在各种不同领域内发挥巨大威力的基础。为了使某种抽象保持得尽可能久，人们创造了在这种或那种实际应用中公认为容易理解的“框架”：那么证明就显得大大简化，因为次要的东西都除掉了。<strong>一个数学结构是一个或几个合成法则的已知条件。</strong></p>
+</blockquote>
+<p>上期我们提到的群 $(G, \ast)$ 、域 $(\mathbb{F}, +, \cdot)$、向量空间 $(V, \mathbb{F}, +, \cdot)$ 就是<strong>数学结构</strong> （这里尤其指的是<strong>代数结构</strong>）。上述的 $G,$ $\mathbb{F},$ $V$ 是集合，而 $\ast,$ $+,$ $\cdot$ 是定义的运算，就是所谓的<strong>合成法则</strong>，一个代数结构的核心可以说是定义在集合上的合成法则（运算），并满足特定的公理，总的来说这三者（集合、运算、公理）共同定义了一个代数结构。</p>
+<p><em>通俗来讲：集合就像舞台，运算就像舞台上的舞蹈规则。规则（运算）本身是核心，但规则只对这个舞台（集合）上的演员（元素）有效，而且演员表演（映射）不能离开舞台（封闭性）。</em></p>
+<h3 id="section-2-2-1-2-">2.2.1.2 合成法则</h3>
+<p><strong>合成法则</strong> 指在数学结构中定义的元素之间如何相互作用或结合的规则。这些法则规定了元素如何通过运算、关系或操作组合在一起，从而形成结构的核心特性。在将来会进一步学习的下列结构中体现了一些合成法则（本课程暂不深究）：</p>
+<ul>
+<li>
+<p>代数结构中（如群、环、域、模），合成法则可以是加法或乘法运算。</p>
+</li>
+<li>
+<p>拓扑结构中，合成法则涉及开集的交并操作所遵循的规则。</p>
+</li>
+<li>
+<p>范畴论中，合成法则描述态射之间的复合操作。</p>
+</li>
+</ul>
+<p>具体合成法则的定义，可以让我们在定义具体数学结构时更加简洁，如下例中具体定义了一个<strong>双项运算/二元运算</strong>法则，直接阐明了<strong>封闭性</strong>，使之不必再冗杂于具体数学结构（如下例中的群）需满足的其它公理之中。</p>
+<blockquote>
+<p><strong><em>莫宗坚</em></strong> 的《代数学》定义2.1: </p>
+<p>设 $G$ 为一非空集合。如果任取 $G$ 中的二元素 $a$ 及 $b$，$a * b$ 也是 $G$ 中的一个元素，则称 $*$ 为一个<strong>双项运算</strong>。 
+如果对 $G$ 的一个子集 $H$ 而言，从 $H$ 中任意两个元素 $a$ 及 $b$ 得到的 $a * b$ 恒在 $H$ 中，则称 $H$ 对 $*$ 是<strong>封闭的</strong>，即 $*$ 为 $H$ 的双项运算。</p>
+</blockquote>
+<p>至此抽象的<strong>数学结构</strong>概念已初步解释完结。接着，一个具体的数学代数结构——<strong>向量空间</strong>为什么这么定义，就变得更清晰。</p>
+<h3 id="section-2-2-1-3-">2.2.1.3 具体的结构：向量空间</h3>
+<p>上期我们讲到如同“集合”和“元素”是数学的最基本概念，“向量空间”和“向量”是线性代数的最基本概念。一个向量空间具有四个要素 $(V, \mathbb{F}, +, \cdot)$，其中 $V$ 是非空集合，$\mathbb{F}$ 是数域，然后我们定义运算：</p>
+<blockquote>
+<p><strong>加法运算</strong> $+$ 是 $V \times V \to V$ 的 <strong>映射</strong>.</p>
+<p><strong>标量乘法运算</strong> $\cdot$ 是 $\mathbb{F} \times V \to V$ 的 <strong>映射</strong>.</p>
+</blockquote>
+<p>（补充：上期我们提到 <strong>映射</strong> 定义 $A \times B \to C$ 保证了运算结果必定在 $C$ 中，即$ + : V \times V \to V $ 和$ \cdot : \mathbb{F} \times V \to V $也保证了运算结果必然在$V$中。）</p>
+<p>然而，并非是满足上述两个运算规则的集合就能作为向量空间。要成为向量空间，它们必须满足给定的一些性质，即向量空间的8条公理。接着就可以用以上来定义向量空间了：</p>
+<blockquote>
+<p><strong>定义</strong>
+设 $V$ 是一个非空集合，$V$ 的元素称为向量，$\mathbb{F}$ 是一个标量域，$\mathbb{F}$ 的元素称为标量。在 $V$ 上定义加法运算 $\alpha + \beta \in V$ 和标量乘法运算 $\lambda \alpha \in V$，其中 $\alpha, \beta \in V$，$\lambda \in \mathbb{F}$。若这两种运算满足下列运算法则，代数结构 $(V, \mathbb{F}, +, \cdot)$ 称为<strong>向量空间</strong>（或者称 $V$ 在加法和标量乘法运算下构成标量域 $\mathbb{F}$ 上的向量空间）：</p>
+<ul>
+<li>加法公理</li>
+</ul>
+<p>(A1) <strong>加法交换律</strong><br/>
+$\forall \alpha, \beta \in V$, $\alpha + \beta = \beta + \alpha$</p>
+<p>(A2) <strong>加法结合律</strong><br/>
+$\forall \alpha, \beta, \gamma \in V$, $(\alpha + \beta) + \gamma = \alpha + (\beta + \gamma)$</p>
+<p>(A3) <strong>加法恒等元/单位元/零元</strong><br/>
+存在零向量 $0 \in V$ 使得 $\forall \alpha \in V$, $0 + \alpha = \alpha$</p>
+<p>(A4) <strong>加法逆元</strong><br/>
+$\forall \alpha \in V$, 存在 $\beta \in V$ 使得 $\alpha + \beta = 0$</p>
+<ul>
+<li>标量乘法公理</li>
+</ul>
+<p>(M1) <strong>标量乘法结合律</strong><br/>
+$\forall \alpha \in V$ 和 $\lambda, \mu \in \mathbb{F}$, $\lambda(\mu \alpha) = (\lambda \mu) \alpha$</p>
+<p>(M2) <strong>标量乘法恒等元/单位元/幺元</strong><br/>
+$\forall \alpha \in V$, $1 \alpha = \alpha$</p>
+<ul>
+<li>分配律</li>
+</ul>
+<p>(D1) <strong>分配标量</strong><br/>
+$\forall \alpha \in V$ 和 $\lambda, \mu \in \mathbb{F}$, $(\lambda + \mu) \alpha = (\lambda \alpha) + (\mu \alpha)$</p>
+<p>(D2) <strong>分配向量</strong><br/>
+$\forall \alpha, \beta \in V$ 和 $\lambda \in \mathbb{F}$, $\lambda(\alpha + \beta) = (\lambda \alpha) + (\lambda \beta)$</p>
+</blockquote>
+<p>当 $\mathbb{F} = \mathbb{R}$ 时，$V$ 称为实向量空间；当 $\mathbb{F} = \mathbb{C}$ 时，$V$ 称为复向量空间。只有一个元素的向量空间 $V = {\mathbf{0}}$ 称为零空间。</p>
+<p>这里我们会发现疑惑：为什么上面的加法和乘法运算，一个定义于一个集合$V$，另一个却定义于两个集合（$\mathbb{F}$与$V$）呢？</p>
+<h3 id="section--2-2-1-4-">$*$ 2.2.1.4 内合成法则与外合成法则</h3>
+<p><em>（标题打了$*$表示可以跳过）</em></p>
+<p><strong><em>J.Quinet</em></strong> 的代数教材中区分了内外合成法则，其中我们发现外合成法则的标量乘法显然没有交换律，这促进了对上期提到的<strong>非交换</strong>的一个初步理解。下面给出该教材部分译文：</p>
+<blockquote>
+<p><strong>内合成法则</strong> 内合成法则的概念概括了算术和代数中熟知的运算的概念。使用集合的语言，合成法则看来是映射的一个特殊情形。设 $E$ 是一个非空集合。由 $E \times E$ 到 $E$ 中的一个映射，将 $E$ 的元素的每一个二元组 $(x, y)$ 与一个被称作 $x$ 和 $y$ 的合成的元素对应起来，这个元素通常记作 $x \perp y$，我们就把这个映射称作 $E$ 上的<strong>内合成法则</strong>。</p>
+<p><strong>外合成法则</strong>  在日常生活中，乘法作为一个内合成法则出现，是很少的：$\alpha$本书，每本值$x$法郎，那么其全部价值由$x$法郎的$\alpha$倍计算出来。$\alpha x$表示出法郎数目。但是很明显，$\alpha$和$x$不起对称的作用：$\alpha$是法郎数目集合上的一个算子（正巧$\alpha x = x \alpha$，这就引起了算子和元素$x$之间令人惋惜的混乱）。
+设$E$和$\Omega$是两个集合，我们把从$\Omega \times E$到$E$中的把$E$的一个元素与二元组$(\alpha, x)$对应起来的映射称作$E$上的<strong>外合成法则</strong>，通常记作$\alpha x$。集合$\Omega$称作<strong>算子的域</strong>。</p>
+</blockquote>
+<h2 id="section-2-2-2-subspace-">2.2.2 子空间(Subspace)</h2>
+<h3 id="section-2-2-2-0-">2.2.2.0 $*$ 公理化体系框架</h3>
+<p>（不严格展开。否则，这足以作为另外一门课程，这不是此课程的目标！）</p>
+<p><strong>数学公理化体系（Axiomatic System）</strong> 是现代数学的核心方法论，它通过公理（不加证明的基本假设）和逻辑推理构建出严谨、自洽的理论大厦，通俗来讲是：<strong>从最少的不定义概念和公理出发，通过演绎推导出所有结论。</strong> 那么它有以下几个核心要素：</p>
+<ol>
+<li><strong>公理（Axioms）</strong>:理论的基本假设，无需证明，作为推理起点。</li>
+<li><strong>定义（Definition）</strong>:人为约定的概念。</li>
+<li><strong>定理（Theorem）</strong>:需要证明，可以分为一般定理/大定理(Theorem)和性质定理/命题(Property /Proposition)以及判定定理(Criterion)。一般定理是理论中最重要、最普遍的结论。命题/性质定理是从公理或定义出发，通过简单逻辑推导得出的真陈述。判定定理是用于验证某对象是否满足定义的充要条件。</li>
+<li><strong>引理（Lemma）</strong>:需要证明，由公理推导出的中间结果，能简化后续证明，强调形式上的铺垫性地位。</li>
+<li><strong>推论（Corollary）</strong>:从定理直接推出的次级结论，通常无需额外证明。</li>
+<li><strong>猜想（Conjecture）</strong>:未被证明但有证据支持的数学假设。可能升格为定理，或被证伪。</li>
+</ol>
+<h3 id="section-2-2-2-1-definition-">2.2.2.1 子空间定义(Definition)</h3>
+<p>本节中的<strong>子空间</strong>，特别指<strong>向量子空间</strong>。</p>
+<blockquote>
+<p><strong>Definition</strong>:</p>
+<p>A vector space $W$ is a <em>subspace</em> of a vector space $V$ if $W\subseteq V$ (i.e. every vector in $W$ is also a vector in $V$),</p>
+<p>and the laws of vector addition and scalar multiplication are consistent (i.e. if $v_{1}$ and $v_{2}$ are in $W$, and hence in $V$, the rule that $W$ gives for adding $v_{1}$ and $v_{2}$ gives the same answer as the rule that $V$ gives for adding $v_{1}$ and $v_{2}$.)</p>
+</blockquote>
+<p>上述定义中$W$已经是一个包含于向量空间$V$的向量空间。接着我们来想，如果更一般的，$W$只是向量空间$V$的一个子集，给定类似的条件是否依旧可以成为$V$的向量子空间？为了快速验证这样的情况，下面的这个<strong>引理(Lemma)</strong>应运而生。</p>
+<h3 id="section-2-2-2-2-">2.2.2.2 向量子空间引理</h3>
+<blockquote>
+<p><strong>Lemma.</strong> Let $V$ be a vector space, and let $W$ be a subset of $V$. Then $W$ is a subspace of $V$ if and only if the following two properties are satisfied:</p>
+<p><strong>($W$ is closed under addition)</strong> If $w_{1}$ and $w_{2}$ are in $W$, then $w_{1}+w_{2}$ is also in $W$.</p>
+<p><strong>($W$ is closed under scalar multiplication)</strong> If $w$ is in $W$ and $c$ is a scalar, then $cw$ is also in $W$.</p>
+</blockquote>
+<p>在证明上面这个引理之前，初步学习者会发现一些漏洞：引理中“$W$是子空间”的结论本身要求$W$必须是一个向量空间，而向量空间必须包含零向量，因此非空是子空间的必然要求。但问题在于，仅凭两个封闭性条件（没有显式非空要求）不能推出非空（因为空集满足这两个条件,见下列关于 <strong>非空(Vacuous Truth)</strong> 的补充）。因此，细心的初学者会认为这个引理的表述是不严谨的。
+上述漏洞的修正方法有两种：</p>
+<ol>
+<li>要求W是非空集合。</li>
+<li>要求W包含零向量（蕴含了非空）。</li>
+</ol>
+<p>而事实上，我们发现<em>条件1</em>即非空性是隐含在引理描述"$w₁,w₂∈W$"和"$w ∈W$"中的，默认读者理解 $W$ 需有元素才能验证封闭性。著名教材<strong>Hoffman &amp; Kunze</strong>的<strong><em>Linear Algebra</em></strong>也是这样隐含的，后续我们会了解到这样处理是避免冗余且符合逻辑的，但是缺点就是容易使阅读者遗漏或误解证明条件。</p>
+<p>至于条件2，more on this later. 当然，著名教材 <strong><em>Linear Algebra Done Right</em></strong> 的作者 <strong>Axler</strong> 表示 <em>显式包含 $0∈W$ 可避免学生犯下灾难性错误——例如试图证明空集是子空间</em>.</p>
+<h4 id="section--vacuous-truth">补充：<strong>Vacuous Truth</strong></h4>
+<p><strong>空真</strong>：全称量词修饰空集时，命题恒真。例如：</p>
+<ul>
+<li>
+<p>对于加法封闭性：
+"$∀w₁,w₂∈∅,$$ w₁+w₂∈∅$" 为真，因为前提恒假（$∅$中不存在任何$w₁,w₂$）。</p>
+</li>
+<li>
+<p>对于标量乘法封闭性：
+"$∀c∈𝔽, $ $∀w∈∅, cw∈∅$" 同样为真（$∅$中不存在$w$）。</p>
+</li>
+</ul>
+<h3 id="section-2-2-2-3-">2.2.2.3 向量子空间引理证明和例子</h3>
+<p>首先，明确证明的目标是：<strong>证明一个向量空间$V$的子集$W$是子空间当且仅当$W$对加法和标量乘法封闭。</strong>
+ 证明分为两部分：必要性（"only if"）和充分性（"if"）。</p>
+<ol>
+<li>必要性（"only if"）部分：
+    假设$W$是$V$的子空间。根据子空间的定义，$W$本身是一个向量空间，因此必须满足向量空间的所有公理，包括对加法和标量乘法的封闭性。所以$W$对加法和标量乘法封闭是必要的。</li>
+<li>充分性（"if"）部分：
+    假设$W$是$V$的一个非空子集（注意：前面提到，这里虽然没有明确说非空，但实际上隐含非空），且对加法和标量乘法封闭。需要证明$W$是一个向量空间（即满足向量空间的8条公理）。</li>
+</ol>
+<blockquote>
+<p><strong><em>Proof.</em></strong> First suppose that $W$ is a subspace of $V$. Then $W$ will be closed under addition and multiplication directly from the definition of vector space. This proves the "only if" part.</p>
+</blockquote>
+<p>如上，第一部分：
+必要性证明</p>
+<p>（子空间 $\implies$ 封闭性）</p>
+<p>是定义的直接推论（几乎无需证明）：
+ $W$ 是子空间，即$W$是向量空间，直接满足加法和标量乘法封闭性
+  $$
+  \begin{align*}
+  W \text{ 是子空间} &amp; \implies W \text{ 是向量空间} \\
+  &amp; \implies \text{加法封闭} \land \text{数乘封闭}
+  \end{align*}
+  $$</p>
+<blockquote>
+<p>Now we prove the harder "if part". In other words, we assume that $W$ is a subset of $V$ which is closed under addition and scalar multiplication, and we have to prove that $W$ is a vector space. In other words, we have to verify the axioms I-VIII.</p>
+<p>Most of these axioms follow immediately because $W$ is a subset of $V$, and $V$ already obeys the axioms I-VIII. </p>
+<p>For instance, since vectors $v_{1},v_{2}$ in $V$ obey the commutativity property $v_{1}+v_{2}=v_{2}+v_{1}$, it automatically follows that vectors in $W$ also obey the property $w_{1}+w_{2}=w_{2}+w_{1}$, since all vectors in $W$ are also vectors in $V$. This reasoning easily gives us axioms I, II, V, VI, VII, VIII.</p>
+</blockquote>
+<p>如上，第二部分：充分性证明</p>
+<p>（封闭性 $\implies$ 子空间）</p>
+<p><strong>非空性要求</strong>：</p>
+<ul>
+<li>
+<p>证明隐含 $W \neq \emptyset$（否则 $0w$ 无定义）</p>
+</li>
+<li>
+<p>实际应用中需先验证 $W$ 非空（常通过 $0_V \in W$ 保证）</p>
+</li>
+</ul>
+<p><strong>公理继承/传递性</strong>：
+   - 由于 $W \subseteq V$ 且 $V$ 是向量空间
+   - $W$ 中的运算继承 $V$ 的运算规则</p>
+<p>（注：子集本身不继承公理，但条件中的<strong>封闭性</strong>+<strong>子集关系</strong>共同创造了继承<strong>等式/运算律公理</strong>的条件，但<strong>存在性公理</strong>不继承，需要额外验证或推导。下面将要讲到标量乘法封闭性进一步提供了<strong>构造</strong>存在性元素的工具。）</p>
+<hr/>
+<p><em>“存在性公理是向量空间的锚点，没有它们，运算的海洋将失去参照系。”</em></p>
+<p>在向量空间的公理中，<strong>存在性公理</strong>通常指的是 <strong>零向量存在</strong>（公理III）和 <strong>加法逆元存在</strong>（公理IV）。而标量<strong>乘法单位元</strong>（即$1·v=v$）属于运算性质，并不单独断言某个元素的存在。</p>
+<p><em>“存在性公理构建骨架，运算律公理赋予血肉，而标量单位元公理只是标量域与向量空间的一次握手。”</em></p>
+<hr/>
+<blockquote>
+<p>There is a potential problem with III though, because the zero vector 0 of $V$ might not lie in $W$. Similarly with IV, there is a potential problem that if $w$ lies in $W$, then $-w$ might not lie in $W$. But both problems cannot occur, because $0=0w$ and $-w=(-1)w$ , and $W$ is closed under scalar multiplication.$\square$(证毕）</p>
+</blockquote>
+<p>如上，<strong>构造性思想</strong>：</p>
+<p>容易发现我们在上文提到的<em>“条件2.要求W包含零向量”</em> 已经被用到了。但实际上这个条件已经隐含在运算封闭性之中了，也是上一节2.1.5中证明过的一个结论 $0\mathbf{v} = \mathbf{0}$（零乘性质）,这样就用标量乘法构造证明了零向量的存在，使得符合两个运算封闭性的非空子集$W$成为向量空间。$\square$</p>
+<hr/>
+<p>至此向量子空间引理证毕，这里把非空性补充后，重新给出：</p>
+<ul>
+<li><strong>向量子空间判定引理</strong> </li>
+</ul>
+<p>集合$V$是向量空间，</p>
+<p>集合$W \subseteq V$ 是其子空间 $\iff$<br/>
+1. $W \neq \emptyset$<br/>
+2. $\forall c \in \mathbb{F},\ \forall w_1,w_2 \in W,$
+$\ cw_1 + w_2 \in W$</p>
+<p>这个引理使得<strong>生成</strong>（generate/span，更多有关生成的内容，将很快地在后续被提到）大量向量空间变得非常简单，只需选取一个大的向量空间，然后取其满足加法和标量乘法封闭性的子集即可。例如：</p>
+<p><strong>偶多项式</strong>. 用$P(\mathbf{R})$表示所有多项式$f(x)$构成的向量空间。称一个多项式是<em>偶的</em>，如果满足$f(x)=f(-x)$；例如，$f(x)=x^{4}+2x^{2}+3$是偶多项式，而$f(x)=x^{3}+1$则不是。用$P_{even}(\mathbf{R})$表示所有偶多项式的集合，显然$P_{even}(\mathbf{R})$是$P(\mathbf{R})$的子集。</p>
+<p>现在我们将证明$P_{even}(\mathbf{R})$不仅是子集，更是$P(\mathbf{R})$的子空间。由上述引理可知，只需证明$P_{even}(\mathbf{R})$对向量加法和标量乘法运算封闭即可。</p>
+<p>首先证明其对向量加法封闭：设$f$和$g$是偶多项式，需证明$f+g$也是偶的。即需要证明$f(-x)+g(-x)=f(x)+g(x)$。由于$f(-x)=f(x)$且$g(-x)=g(x)$，结论显然成立。类似可证偶多项式对标量乘法运算也封闭。</p>
+<h3 id="section-2-2-2-4-directsum-">2.2.2.4 子空间的和与直和（directsum）$⊕$</h3>
+<p>可以看书 <strong><em>LADR</em></strong> 中的<strong><em>1.36-1.46</em></strong>，这里暂不展开。</p>
+<p>上节我们讲向量子空间引理后提到了生成(generate/span)：要获得一个向量空间，只需选取一个大的向量空间，然后取其满足加法和标量乘法封闭性的子集即可。本节我们将从给定一个向量空间如何构建一个子空间开始引入。<em>（与上节的多样性不同，本节内容多编译自提到过的LNLA，Tao写的内容逻辑连贯性太好了！除了明显的连贯性，其中还隐含了几个有关于有限维与无限维的兼容问题，无不体现数学体系微妙的结构,大多数教材并不会关注这点，这折射了天才与大师美妙的眼光。我们做标记 </em><strong>subtle</strong><em> 放在下节与练习共同呈现！ ）</em></p>
+<h1 id="section-2-3-">2.3 线性组合、张成空间、线性方程组与矩阵、高斯消元法、生成集、线性相关、基</h1>
+<h2 id="section-2-3-1-linear-combination-span-">2.3.1 线性组合(linear combination)、张成空间(span)</h2>
+<h3 id="section-2-3-1-1-">2.3.1.1 尝试构建子空间：从单向量到多向量</h3>
+<p>以向量空间$\mathbf{R}^{3}$为例，尝试构造这个空间的一些子空间。</p>
+<blockquote>
+<ul>
+<li>单向量</li>
+</ul>
+<p>首先，我们随机选择一个$\mathbf{R}^{3}$中的向量，比如$v:=(1,2,3)$，构造一个包含这个向量$(1,2,3)$的$\mathbf{R}^{3}$的子空间$V$。当然，通过设$V$等于整个$\mathbf{R}^{3}$可以轻松实现；这肯定包含我们的单个向量$v$，但这有些过度。</p>
+<p>让我们尝试找一个包含$v$的更小的$\mathbf{R}^{3}$的子空间:让$V$只包含单个点$(1,2,3)$即$V:=\{(1,2,3)\}$。但这个空间不是向量空间；它对标量乘法不封闭。例如，$10(1,2,3)$ $=(10,20,30)$不在这个空间中。为了使$V$成为向量空间，还必须放入$(1,2,3)$的所有标量倍数：$(2,4,6)$，$(-1,-2,-3)$，$(0,0,0)$等：$$V\supseteq\{a(1,2,3):a\in\mathbf{R}\}.$$</p>
+</blockquote>
+<p>如上，空间$\{a(1,2,3):a\in\mathbf{R}\}$满足上节中的向量子空间引理，是$\mathbf{R}^{3}$的一个包含$(1,2,3)$的子空间。从几何直观角度看，这个一维的空间是通过原点和$(1,2,3)$的直线。</p>
+<p>到目前为止，我们所看到若要找到包含指定向量$v$的子空间$V$，仅包含$v$是不够的，还必须包含所有标量倍 $a v$（其中$a$为标量）。后文将称集合$\{a v:a\in\mathbf{R}\}$为$v$的 <strong>张成空间(span)</strong> ，记作$\text{span}(\{v\})$。</p>
+<blockquote>
+<ul>
+<li>双向量</li>
+</ul>
+<p>若有$v:=(1,2,3)$和$w:=(0,0,1)$，要构造$\mathbf{R}^3$中同时包含$v$和$w$的向量子空间$V$，虽然令$V=\mathbf{R}^3$依旧可行，但我们需要尽可能小的$V$。</p>
+<p>$V$不仅需包含$v$和$w$，还需包含其所有标量倍 $a v$ 和 $b w$（$a,b$为标量）。此外，因$V$对向量加法封闭，故必须包含形如$a v + b w$的向量。例如:$$3v+5w=3(1,2,3)+5(0,0,1)=(3,6,9)+(0,0,5)=(3,6,14).$$  </p>
+</blockquote>
+<p>此类$a v + b w$称为$v$和$w$的 <strong>线性组合(linear combination)</strong> ，因此$(3,6,14)$即是$(1,2,3)$与$(0,0,1)$的一个线性组合。所有线性组合的集合$\{a v + b w : a,b\in\mathbf{R}\}$ 称为$v$和$w$的张成空间，记作$\text{span}(\{v,w\})$。它是通过原点且包含$v$和$w$的平面。</p>
+<h3 id="section-2-3-1-2-">2.3.1.2 线性组合与张成空间定义</h3>
+<blockquote>
+<p><strong>定义</strong>：设$S$为一个向量空间$V$中的向量集合（有限或无限）。$S$的<strong>线性组合</strong>指形如 $$a_1 v_1 + a_2 v_2 + \ldots + a_n v_n$$<br/>
+  的向量，其中$a_1,\ldots,a_n$为标量（可为零或负），$v_1,\ldots,v_n \in S$。</p>
+<p>$S$的<strong>张成空间</strong> $\text{span}(S)$定义为$S$的所有线性组合的集合：
+ $$
+  \text{span}(S) := \{a_1 v_1 + a_2 v_2 + \ldots + a_n v_n : a_1,\ldots,a_n \in \mathbf{R};  v_1,\ldots,v_n \in S\}.$$</p>
+<p>通常我们处理的集合$S$是 <strong>有限(finite)</strong> 的: $S=\{v_{1},\ldots,v_{n}\}$ 此时张成空间即<br/>
+$$\text{span}(\{v_{1},\ldots,v_{n}\}):=\{a_{1}v_{1}+a_{2}v_{2}+\ldots+a_{n}v_{n}:a_{1},\ldots,a_{n}\in\mathbf{R}\}.$$ </p>
+</blockquote>
+<p><strong><em>subtle1(将在下节做独立补充拓展）</em></strong> <em>读者可能发现，有限集的线性组合定义与一般定义兼容或者说等价：因为它始终是有限和，确保操作在任意向量空间中有效。</em></p>
+<p>处理$S$为空集时，定义空集的生成空间$\text{span}(\emptyset)$为零向量空间$\{0\}$。（因此$0$是向量的空集的唯一一个线性组合。这是广泛数学约定的一部分：空集的和为零，空集的积为1。）</p>
+<h3 id="section-2-3-1-3-">2.3.1.3 张成空间性质定理</h3>
+<blockquote>
+<p><strong>定理</strong>：</p>
+<p>设$S$是向量空间$V$的子集，则：
+1. $\text{span}(S)$是$V$的子空间且包含$S$
+2. 任何包含$S$的$V$的子空间必然包含整个$\text{span}(S)$</p>
+</blockquote>
+<p>我们将详细证明这个特定的定理，以说明如何给出这样一个定理的证明。在后面的定理中，我们将更快地略过证明。</p>
+<p><strong>证明</strong>：</p>
+<p>如果$S$是空集，那么这个定理是平凡的(trivial,显然成立的，相比于obvious，强调对象本身的简单性)。因此我们从假设$n \geq 1$开始，把定理分成各个组成部分。</p>
+<ul>
+<li>(a) 首先我们验证$\text{span}(S)$是$V$的一个子空间。为此我们需要检查三件事：$\text{span}(S)$包含在$V$中；它对加法封闭；它对标量乘法封闭。</li>
+<li>(a.1) 要验证$\text{span}(S)$包含在$V$中，我们需要取生成空间的一个典型元素，比如$a_1 v_1 + \ldots + a_n v_n$，其中$a_1, \ldots, a_n$是标量，$v_1, \ldots, v_n \in S$，并验证它在$V$中。但这是显然的，因为$v_{1},\ldots,v_{n}$原本就在$V$中，且$V$对加法和标量乘法封闭。</li>
+<li>(a.2) 要验证空间$\text{span}(S)$对向量加法封闭，我们取该空间的两个典型元素$a_{1}v_{1}+\ldots+a_{n}v_{n}$和$b_{1}v_{1}+\ldots+b_{n}v_{n}$（其中$a_{j}$和$b_{j}$为标量，$v_{j}\in S$，$j=1,\ldots n$），并验证它们的和也在$\text{span}(S)$中。这个和为：$(a_{1}v_{1}+\ldots+a_{n}v_{n})+(b_{1}v_{1}+\ldots+b_{n}v_{n})$ 运用公理可以重新排列为：$(a_{1}+b_{1})v_{1}+\ldots+(a_{n}+b_{n})v_{n}$。由于$a_{1}+b_{1},\ldots,a_{n}+b_{n}$都是标量，显然这个和确实在$\text{span}(S)$中。</li>
+<li>(a.3) 要验证空间$\text{span}(S)$对标量乘法封闭，我们取该空间的一个典型元素$a_{1}v_{1}+\ldots+a_{n}v_{n}$和一个标量$c$。我们需要验证标量积：$c(a_{1}v_{1}+\ldots+a_{n}v_{n})$ 也在$\text{span}(\{v_{1},\ldots,v_{n}\})$中。运用公理这可以重新表示为：$(ca_{1})v_{1}+\ldots+(ca_{n})v_{n}$。因为$ca_{1},\ldots,ca_{n}$都是标量，所以这个结果确实在$\text{span}(S)$中。 </li>
+<li>
+<p>(b) 现在验证$\text{span}(S)$包含$S$。只需证明对每个$v\in S$，$\text{span}(S)$都包含$v$。显然每个$v$都可以表示为$S$中元素的线性组合，即$v=1\cdot v$且$v\in S$。因此$v$确实在$\text{span}(S)$中。</p>
+</li>
+<li>
+<p>(c) 现在验证任何包含$S$的$V$的子空间都包含$\text{span}(S)$。为避免总是说"那个子空间"，我们用$W$表示任意一个包含$S$的$V$的子空间。我们的目标是证明$W$包含$\text{span}(S)$。这等价于说$\text{span}(S)$的每个元素都在$W$中。设$v=a_{1}v_{1}+\ldots+a_{n}v_{n}$是$\text{span}(S)$的一个典型元素，其中$a_j$是标量并且$v_j \in S$（$j=1,\ldots,n$）。我们的目标是证明$v$在$W$中。由于$v_1$在$W$中，且$W$对标量乘法封闭，可知$a_1v_1$在$W$中。同理$a_2v_2,\ldots,a_nv_n$也在$W$中。又因为$W$对向量加法封闭，所以$a_1v_1+\ldots+a_nv_n$确实在$W$中。至此定理得证。$\square$</p>
+</li>
+</ul>
+<p><em>$*$:我们注意到向量的集合的span与$S$的排列顺序无关：例如 $\text{span}(\{u,v,w\})$ 和 $\text{span}(\{w,v,u\})$ 是相同的：$span$ 的定义仅依赖于向量的线性组合，而线性组合的运算（加法和标量乘法）满足交换律和结合律。</em></p>
+<h2 id="section-2-3-2-linear-system-of-equations-matrix-gaussian-elimination-">2.3.2 线性方程组(linear system of equations) 、矩阵(matrix)、高斯消元法(Gaussian elimination)</h2>
+<h3 id="section-2-3-2-1-">2.3.2.1 一个经济模型</h3>
+<p>在应用中，当系统有若干可用的"操作"时，张成空间的概念经常出现，我们可以通过组合这些操作来观察可能的选项。下面给出一个简单经济模型的例子：</p>
+<p>假设你经营一家汽车公司，使用基本原材料（如资金、劳动力、金属）生产汽车。在任意时刻，你的资源可以用向量$(x,y,z,w)$表示，其中：</p>
+<ul>
+<li>$x$：资金单位数</li>
+<li>$y$：劳动力单位数（以工时计）</li>
+<li>$z$：金属单位数</li>
+<li>$w$：汽车单位数</li>
+</ul>
+<p>你可以通过各种决策来改变资源：</p>
+<ul>
+<li>以2单位资金购买1单位金属：在资源向量上加$(-2,0,1,0)$</li>
+<li>可重复操作：加$a(-2,0,1,0)$（$a&gt;0$时可购买，$a&lt;0$时可出售，$a=0$时不交易）</li>
+<li>以3单位资金购买1单位劳动力：加$(-3,1,0,0)$</li>
+<li>生产1辆汽车需4单位劳动力和5单位金属：加$(0,-4,-5,1)$</li>
+</ul>
+<p>现在的问题是：生产一辆汽车需要多少成本？即需要多少资金$x$，使得能在资源向量上加上$(-x,0,0,1)$？这个问题的答案是22，因为：
+$$(-22,0,0,1)=5(-2,0,1,0)+4(-3,1,0,0)+1(0,-4,-5,1)$$
+这意味着通过以下方式可以将22单位资金转换为1辆汽车：</p>
+<ul>
+<li>购买5单位金属</li>
+<li>购买4单位劳动力</li>
+<li>生产1辆汽车</li>
+</ul>
+<p>另一方面，使用现有操作无法用更少的资金获得汽车（为什么呢？在下文我们将会了解在什么情况线性方程组的解被唯一确定）。换句话说，$(-22,0,0,1)$是唯一形如$(-x,0,0,1)$且位于向量$(-2,0,1,0)$、$(-3,1,0,0)$和$(0,-4,-5,1)$的张成空间中的向量。</p>
+<p>当然，这个例子非常简单，我们可以直接计算出资金。但在更复杂的情况下（当向量中包含更多非零元素时），确实需要计算各种向量的张成空间。实际上，现实情况比这更复杂，因为有其他约束条件。例如：</p>
+<ul>
+<li>
+<p>可以用资金购买劳动力，但不能出售劳动力换回资金——因此$(-3,1,0,0)$前的标量只能为正不能为负</p>
+</li>
+<li>
+<p>存储限制可能限制一次能购买的金属数量等</p>
+</li>
+</ul>
+<p>这使得我们从线性代数过渡到更复杂的线性规划理论（这超出了本课程的范围）。此外，由于边际效益递减规律（the law of diminishing returns）和规模经济法则（the law of economies of scale）等，现实情况并不像这个简单模型中呈现的那么线性。这最终将我们引向<strong>非线性优化</strong>和<strong>控制理论</strong>（<strong>non-linear optimization</strong> and <strong>control theory</strong>，同样超出了本课程的范围）。</p>
+<h3 id="section-2-3-2-2-">2.3.2.2 线性方程组与矩阵</h3>
+<p>承接上面的例子，引出了以下问题：如何判断给定向量$v$是否在其他向量$v_1,v_2,\ldots,v_n$的张成空间中？例如，向量$(0,1,2)$是否在$(1,1,1)$、$(3,2,1)$和$(1,0,1)$的生成空间中？这等价于寻找标量$a_1$、$a_2$、$a_3$使得：</p>
+<p>$$(0,1,2)=a_1(1,1,1)+a_2(3,2,1)+a_3(1,0,1)$$</p>
+<p>我们可以将左边展开为：</p>
+<p>$$(a_1+3a_2+a_3,\ a_1+2a_2,\ a_1+a_2+a_3)$$</p>
+<p>因此我们需要找到满足以下方程组的$a_1$、$a_2$、$a_3$：</p>
+<p>$$\begin{cases}
+a_1 + 3a_2 + a_3 = 0 \\
+a_1 + 2a_2 = 1 \\
+a_1 + a_2 + a_3 = 2
+\end{cases}$$</p>
+<blockquote>
+<p>这是一个<strong>线性方程组</strong>：</p>
+<ul>
+<li>称为"组"是因为它包含多于一个方程</li>
+<li>称为"线性"是因为变量$a_1$、$a_2$、$a_3$仅以线性形式出现（而不是二次形式如$a_1^2$或$a_2a_3$，或更非线性的形式如$\sin(a_1)$）</li>
+</ul>
+</blockquote>
+<p>这个方程组也可以写成<strong>矩阵</strong>形式^：</p>
+<p>$$\begin{pmatrix}
+1 &amp; 3 &amp; 1 \\
+1 &amp; 2 &amp; 0 \\
+1 &amp; 1 &amp; 1
+\end{pmatrix}
+\begin{pmatrix}
+a_1 \\
+a_2 \\
+a_3
+\end{pmatrix}
+=
+\begin{pmatrix}
+0 \\
+1 \\
+2
+\end{pmatrix}$$</p>
+<p>或者用<strong>图示</strong>形式^表示为：</p>
+<p>$$\left(
+\begin{array}{ccc|c}
+1 &amp; 3 &amp; 1 &amp; 0 \\
+1 &amp; 2 &amp; 0 &amp; 1 \\
+1 &amp; 1 &amp; 1 &amp; 2
+\end{array}
+\right)$$</p>
+<hr/>
+<h4 id="section--">^注:矩阵与增广矩阵</h4>
+<p>(1) <strong>矩阵（matrix）</strong> 就是一个“数字表格”，有行（横排）和列（竖排），可以高效表示线性方程组。如上例有三个部分：</p>
+<ul>
+<li>
+<p><strong>系数矩阵</strong>：变量前的系数组成的表格<br/>
+  $$
+  A = \begin{pmatrix} 
+  1 &amp; 3 &amp; 1 \\ 
+  1 &amp; 2 &amp; 0 \\ 
+  1 &amp; 1 &amp; 1 
+  \end{pmatrix}
+  $$
+行对应方程，例如：第二行 $\begin{pmatrix}1 &amp; 2 &amp; 0\end{pmatrix}$ 表示 $a_1 + 2a_2 + 0a_3$ 。列对应变量（第1列 $a_1$，第2列 $a_2$，第3列 $a_3$）。</p>
+</li>
+<li>
+<p><strong>变量向量</strong>：未知数按顺序排列的列向量<br/>
+  $$
+  \mathbf{x} = \begin{pmatrix} a_1 \\ a_2 \\ a_3 \end{pmatrix}
+  $$</p>
+</li>
+<li>
+<p><strong>常数向量</strong>：等式右侧常数组成的列向量<br/>
+  $$
+  \mathbf{b} = \begin{pmatrix} 0 \\ 1 \\ 2 \end{pmatrix}
+  $$</p>
+</li>
+</ul>
+<p>组成 <strong>矩阵方程</strong> 即：
+$$
+A\mathbf{x} = \mathbf{b} \quad \Rightarrow \quad 
+\underbrace{\begin{pmatrix} 
+1 &amp; 3 &amp; 1 \\ 
+1 &amp; 2 &amp; 0 \\ 
+1 &amp; 1 &amp; 1 
+\end{pmatrix}}_{\text{系数矩阵}} 
+\underbrace{\begin{pmatrix} a_1 \\ a_2 \\ a_3 \end{pmatrix}}_{\text{变量向量}} 
+= 
+\underbrace{\begin{pmatrix} 0 \\ 1 \\ 2 \end{pmatrix}}_{\text{常数向量}}
+$$</p>
+<ul>
+<li>矩阵乘法等价于方程左侧的线性组合，例如第一行：$1 \cdot a_1 + 3 \cdot a_2 + 1 \cdot a_3 = 0$ </li>
+</ul>
+<p>(2) <strong>增广矩阵 (Augmented Matrix)</strong> 将系数矩阵和常数向量合并为一个矩阵，用竖线 $|$ 分隔：<br/>
+$$
+(A \mid \mathbf{b}) = 
+\left(\begin{array}{ccc|c} 
+1 &amp; 3 &amp; 1 &amp; 0 \\ 
+1 &amp; 2 &amp; 0 &amp; 1 \\ 
+1 &amp; 1 &amp; 1 &amp; 2 
+\end{array}\right)
+$$</p>
+<ul>
+<li>
+<p><strong>竖线左侧</strong>：系数矩阵（与矩阵形式相同）  </p>
+</li>
+<li>
+<p><strong>竖线右侧</strong>：常数向量（方程等号右侧的值）  </p>
+</li>
+<li>
+<p><strong>每一行</strong>：完整表示一个方程（如第二行：$a_1 + 2a_2 = 1$）</p>
+</li>
+</ul>
+<p>为高斯消元法设计，允许直接对矩阵进行行操作，不改变解的性质：</p>
+<ul>
+<li>
+<p>行交换：$\text{Row}_i \leftrightarrow \text{Row}_j$</p>
+</li>
+<li>
+<p>行缩放：$k \cdot \text{Row}_i$</p>
+</li>
+<li>
+<p>行加减：$\text{Row}_i + k \cdot \text{Row}_j$</p>
+</li>
+</ul>
+<p>如求解上例：
+  $$
+  \begin{array}{c} 
+  \\ \text{① 第二行减第一行} \\ \text{② 第三行减第一行} \\ \downarrow \end{array} 
+  \left(\begin{array}{ccc|c} 
+  1 &amp; 3 &amp; 1 &amp; 0 \\ 
+  0 &amp; -1 &amp; -1 &amp; 1 \\ 
+  0 &amp; -2 &amp; 0 &amp; 2 
+  \end{array}\right) 
+  \begin{array}{c} 
+  \\ \text{③ 第三行减2倍第二行} \\ \downarrow \end{array} 
+  \left(\begin{array}{ccc|c} 
+  1 &amp; 3 &amp; 1 &amp; 0 \\ 
+  0 &amp; -1 &amp; -1 &amp; 1 \\ 
+  0 &amp; 0 &amp; 2 &amp; 0 
+  \end{array}\right)
+  $$
+  解得：$a_3=0,\ a_2=-1,\ a_1=3$ 。</p>
+<hr/>
+<h3 id="section-2-3-2-3-">2.3.2.3 高斯消元法</h3>
+<blockquote>
+<p>要实际求解这个方程组并找到$a_1$、$a_2$、$a_3$，一个最佳方法是使用<strong>高斯消元法</strong>，其思想是尽可能将矩阵中的元素化为零，从而使线性方程组更容易求解。</p>
+</blockquote>
+<p>它有三种基本操作：</p>
+<ol>
+<li>
+<p><strong>交换两行（行交换）</strong>：由于方程组的显示顺序不重要，我们可以自由交换任意两行。这主要是为了美观，使系统看起来更整洁。</p>
+</li>
+<li>
+<p><strong>将一行乘以常数（行缩放）</strong>：我们可以将方程两边乘以任意常数（但要避免乘以0，因为这样会将方程简化为平凡的0=0，且该操作不可逆，因为除以0是非法的）。这同样主要是为了美观，可用于将矩阵中的某个系数设为1。</p>
+</li>
+<li>
+<p><strong>用一行的倍数减去另一行（行加减）</strong>：这是主要操作。可以取任意一行，乘以任意标量，然后从另一行减去（或加上）结果；原行保持不变。主要目的是将第二行的一个或多个矩阵项目设为零。</p>
+</li>
+</ol>
+<p>我们用上述例子演示这些操作。可以使用矩阵形式或图示形式，但目前我们保持线性方程组形式：</p>
+<p>$$\begin{cases}
+a_1 + 3a_2 + a_3 = 0 \\
+a_1 + 2a_2 = 1 \\
+a_1 + a_2 + a_3 = 2
+\end{cases}$$</p>
+<p>1.<strong>归零$a_1$项</strong>：</p>
+<ul>
+<li>
+<p>从第二行减去第一行：
+     $$\begin{cases}
+     a_1 + 3a_2 + a_3 = 0 \\
+     -a_2 - a_3 = 1 \\
+     a_1 + a_2 + a_3 = 2
+     \end{cases}$$</p>
+</li>
+<li>
+<p>从第三行减去第一行：
+     $$\begin{cases}
+     a_1 + 3a_2 + a_3 = 0 \\
+     -a_2 - a_3 = 1 \\
+     -2a_2 = 2
+     \end{cases}$$</p>
+</li>
+</ul>
+<p>2.<strong>得到$a_2$项</strong>：</p>
+<ul>
+<li>
+<p>第三行更简洁，上移交换：
+     $$\begin{cases}
+     a_1 + 3a_2 + a_3 = 0 \\
+     -2a_2 = 2 \\
+     -a_2 - a_3 = 1
+     \end{cases}$$</p>
+</li>
+<li>
+<p>并且将其除以-2：
+     $$\begin{cases}
+     a_1 + 3a_2 + a_3 = 0 \\
+     a_2 = -1 \\
+     -a_2 - a_3 = 1
+     \end{cases}$$</p>
+</li>
+</ul>
+<p>3.<strong>归零$a_2$项</strong>：</p>
+<ul>
+<li>
+<p>从第一行减去三倍第二行</p>
+</li>
+<li>
+<p>从第三行加上一倍第二行：
+     $$\begin{cases}
+     a_1 + a_3 = 3 \\
+     a_2 = -1 \\
+     -a_3 = 0
+     \end{cases}$$</p>
+</li>
+</ul>
+<p>4.<strong>归零$a_2$项</strong>：</p>
+<ul>
+<li>将第三行乘以$-1$，从第一行减去它：
+   $$\begin{cases}
+a_1 = 3 \\
+a_2 = -1 \\  
+a_3 = 0
+ \end{cases}$$</li>
+</ul>
+<p>于是我们得到解：$a_1=3$，$a_2=-1$，$a_3=0$。回到原问题，我们确认了$(0,1,2)$确实在$(1,1,1)$、$(3,2,1)$和$(1,0,1)$的张成空间中：
+$$(0,1,2)=3(1,1,1)+(-1)(3,2,1)+0(1,0,1)$$</p>
+<p>我们发现这个例子中对$a_1$，$a_2$，$a_3$的解唯一，即它们被线性方程组 <strong>完全确定(exactly determined)</strong> 。</p>
+<h3 id="section-2-3-2-4-">2.3.2.4 运用高斯消元法：判断线性相关性、向量是否在张成空间中</h3>
+<p>有时一个线性方程组可能有多个解，这种情况称为 <strong>欠定 (under-determined)</strong> ，即方程数量不足以精确确定所有变量。这通常发生在未知量数量多于方程数量时。例如，判断$(0,1,2)$是否在四个向量$(1,1,1)$、$(3,2,1)$、$(1,0,1)$、$(0,0,1)$的生成空间中：</p>
+<p>$$(0,1,2)=a_1(1,1,1)+a_2(3,2,1)+a_3(1,0,1)+a_4(0,0,1)$$</p>
+<p>对应方程组为：</p>
+<p>$$\begin{cases}
+a_1 + 3a_2 + a_3 = 0 \\
+a_1 + 2a_2 = 1 \\
+a_1 + a_2 + a_3 + a_4 = 2
+\end{cases}$$</p>
+<p>运用高斯消元法：</p>
+<ul>
+<li>
+<p>从第二行和第三行分别减去第一行：
+    $$\begin{cases}
+    a_1 + 3a_2 + a_3 = 0 \\
+    -a_2 - a_3 = 1 \\
+    -2a_2 + a_4 = 2
+    \end{cases}$$</p>
+</li>
+<li>
+<p>第二行乘以$-1$，再归零第一行和第三行的$a_2$项：
+    $$\begin{cases}
+    a_1 - 2a_3 = 3 \\
+    a_2 + a_3 = -1 \\
+    2a_3 + a_4 = 0
+    \end{cases}$$</p>
+</li>
+</ul>
+<p>此时方程组已化为 <strong>简化范式(reduced normal form)</strong> ，即从最底部一行向上移动，每个方程至少引入一个新变量（忽略已退化为$0=0$的平凡方程）。一旦达到简化范式，无法进一步简化。本例中没有唯一解，可设$a_4$为任意值。</p>
+<ul>
+<li>
+<p>第三个方程允许我们用$a_4$写出$a_3$：
+  $$a_3 = -\frac{a_4}{2}$$</p>
+</li>
+<li>
+<p>同理，第二个方程得$a_2$：
+  $$a_2 = -1 - a_3 = -1 + \frac{a_4}{2}$$</p>
+</li>
+<li>
+<p>同样地，可得$a_1$与$a_4$的关系：
+  $$a_1 = 3 + 2a_3 = 3 - a_4$$</p>
+</li>
+</ul>
+<p>因此把$(0,1,2)$写为$(1,1,1)$、$(3,2,1)$、$(1,0,1)$和$(0,0,1)$的线性组合的一般方式是：
+  $$(0,1,2) = (3-a_4)(1,1,1) + \left(-1+\frac{a_4}{2}\right)(3,2,1) + \left(-\frac{a_4}{2}\right)(1,0,1) + a_4(0,0,1)$$</p>
+<p>例如：</p>
+<ul>
+<li>取$a_4=4$时：
+    $$(0,1,2) = -(1,1,1) + (3,2,1) - 2(1,0,1) + 4(0,0,1)$$</li>
+<li>而如果取$a_4=0$时：
+    $$(0,1,2) = 3(1,1,1) - 1(3,2,1) + 0(1,0,1) + 0(0,0,1)$$
+    （依此类推）</li>
+</ul>
+<p>这说明$(0,1,2)$不是只有一个形式在这四个向量的张成空间中的，它可以通过许多方式被写成这些向量的线性组合。这是因为这个向量集合中存在冗余——如上所示的例子中，有的只需前三个向量$(1,1,1)$、$(3,2,1)$和$(1,0,1)$即可生成$(0,1,2)$，第四个向量$(0,0,1)$系数可为0即不是必须的。后文将展开，这是因为这四个向量是 <strong>线性相关的(linearly dependent)</strong> 。</p>
+<p><em>（联系我们后续将引入的 </em><em>秩(rank)</em><em> ）</em></p>
+<p>当然，有时向量可能完全不在其他向量的张空间中。例如，$(0,1,2)$不在$(3,2,1)$和$(1,0,1)$的生成空间中。如果尝试解方程组：
+  $$(0,1,2) = a_1(3,2,1) + a_2(1,0,1)$$
+  即：
+  $$\begin{cases}
+  3a_1 + a_2 = 0 \\
+  2a_1 = 1 \\
+  a_1 + a_2 = 2
+  \end{cases}$$</p>
+<ul>
+<li>
+<p>交换第一行和第二行，并将第一行除以2：
+  $$\begin{cases}
+  a_1 = \frac{1}{2} \\
+  3a_1 + a_2 = 0 \\
+  a_1 + a_2 = 2
+  \end{cases}$$</p>
+</li>
+<li>
+<p>归零第二、三行的$a_1$项：
+  $$\begin{cases}
+  a_1 = \frac{1}{2} \\
+  a_2 = -\frac{3}{2} \\
+  a_2 = \frac{3}{2}
+  \end{cases}$$</p>
+</li>
+<li>
+<p>从第三行减去第二行得到矛盾结果：
+  $$\begin{cases}
+  a_1 = \frac{1}{2} \\
+  a_2 = -\frac{3}{2} \\
+  0 = 3
+  \end{cases}$$
+因此方程组无解即$(0,1,2)$不在该张成空间中。</p>
+</li>
+</ul>
+<h2 id="section-2-3-3-spanning-generating-sets-">2.3.3 生成集(spanning/generating sets)、线性相关与无关</h2>
+<h3 id="section-2-3-3-1-">2.3.3.1 生成集</h3>
+<blockquote>
+<p><strong>定义</strong> 若集合$S$满足$\text{span}(S)=V$（即$V$中每个向量都能表示为$S$中元素的线性组合），则称$S$为$V$的<strong>生成集</strong> 。（"generated"代替"spanned"，称$V$由$S$生成，$S$是$V$的生成集。）</p>
+</blockquote>
+<p>生成集的典型例子是$\mathbf{R}^3$中的集合$\{(1,0,0),(0,1,0),(0,0,1)\}$。显然，$\mathbf{R}^3$中的每个向量都可以表示为这三个向量的线性组合，例如：
+  $$(3,7,13)=3(1,0,0)+7(0,1,0)+13(0,0,1)$$
+  其他向量空间也有类似的例子，比如集合$\{1,x,x^2,x^3\}$就是$P_3(\mathbf{R})$的生成集（同理）。</p>
+<p>可以向生成集中添加额外向量而保持其生成性质。例如，集合$\{(1,0,0),(0,1,0),(0,0,1),(9,14,23),(15,24,99)\}$仍然是$\mathbf{R}^3$的生成集：
+  $$(3,7,13)=3(1,0,0)+7(0,1,0)+13(0,0,1)+0(9,14,23)+0(15,24,99)$$
+当然，最后两个向量在这里没有实际作用，只是"搭便车"而已。更极端的例子是：任何向量空间$V$都是它自身的生成集，即$\text{span}(V)=V$。</p>
+<p>另一方面，从生成集中移除元素可能导致其不再生成整个空间。例如，二元集$\{(1,0,0),(0,1,0)\}$不能生成$\mathbf{R}^3$，因为无法将$(3,7,13)$表示为$(1,0,0)$和$(0,1,0)$的线性组合。</p>
+<p>生成集的价值在于可以用较小的集合$S$来描述空间$V$中的所有向量。例如，集合$S:=\{(1,0,0),(0,1,0),(0,0,1)\}$仅包含三个向量，而它生成的$\mathbf{R}^3$空间却包含无限多个向量。因此，原则上，只需理解这三个向量（以及什么是线性组合）就能理解$\mathbf{R}^3$中的所有向量。</p>
+<p>然而，从上述例子可以看出，生成集可能包含实际上不需要的"冗余"向量。这种冗余发生在集合是<strong>线性相关</strong>的时候。我们希望从生成集中去除这些冗余，创建一个"最小"的生成集——其中所有元素都是<strong>线性无关的(linearly independent)</strong> 。这样的集合被称为<strong>基(basis)</strong> 。接下来，我们将讨论有关于 <strong>线性相关性(linear dependence)</strong>、<strong>线性无关性(linear independence)</strong> 的概念。更多有关于<strong>基</strong>的内容将会在下节提到。</p>
+<h3 id="section-2-3-3-2-">2.3.3.2 线性相关的定义</h3>
+<p>考虑$\mathbf{R}^3$中的三个向量：$v_1:=(1,2,3)$，$v_2:=(1,1,1)$，$v_3:=(3,5,7)$。如我们所知，它们的张成空间$\text{span}(\{v_1,v_2,v_3\})$就是它们的所有线性组合的集合：
+  $$\text{span}(\{v_1,v_2,v_3\}):=\{a_1v_1+a_2v_2+a_3v_3:a_1,a_2,a_3\in\mathbf{R}\}$$
+例如$3(1,2,3)+4(1,1,1)+1(3,5,7)=(10,15,20)$就在张成空间中。但向量$(3,5,7)$是冗余的，因为它可以用另外两个向量表示：
+  $$v_3=(3,5,7)=2(1,2,3)+(1,1,1)=2v_1+v_2$$
+或者更对称地表示为：
+  $$2v_1+v_2-v_3=0$$
+因此，$v_1,v_2,v_3$的任何线性组合实际上只是$v_1$和$v_2$的线性组合：
+  $$a_1v_1+a_2v_2+a_3v_3=(a_1+2a_3)v_1+(a_2+a_3)v_2$$</p>
+<blockquote>
+<p>由于这种冗余性，我们说向量$v_1,v_2,v_3$是<strong>线性相关的</strong>。更一般地，对于向量空间$V$中的任意向量集合$S$，如果存在不同的元素 $v_1,\ldots,v_n\in S$和不全为零的标量$a_1,\ldots,a_n$使得：
+ $$a_1v_1+a_2v_2+\cdots+a_nv_n=0$$
+就称$S$是线性相关的。</p>
+</blockquote>
+<p>（当然，0总是可以平凡地表示为$v_1,\ldots,v_n$ 的线性组合：$$0=0v_1+\cdots+0v_n.$$线性相关意味着平凡线性组合不能是表示 $0$ 的唯一方式，存在至少一种 <strong>非平凡(non-trivial)</strong> 的表示方式。）</p>
+<p>我们需要限制以条件 <strong>$v_1,\ldots,v_n$ 互异</strong> ，以避免如下的无意义情况：$$2v_1+(-2)v_1=0.$$</p>
+<blockquote>
+<p>当$S$是有限集$S=\{v_1,\ldots,v_n\}$时，$S$线性相关的条件是，当且仅当存在不全为零的标量$a_1,\ldots,a_n$使得：
+ $$a_1v_1+\cdots+a_nv_n=0.$$</p>
+</blockquote>
+<p>（为什么这与之前的定义等价？这有些微妙）。<strong><em>（subtle2）</em></strong></p>
+<p>若向量集合$S$不是线性相关的则称为<strong>线性无关</strong>的（因为它们是互斥且完备的）。例如集合$\{(1,2,3),(0,1,2)\}$：不可能找到不全为零的$a_1,a_2$使得
+  $$a_1(1,2,3)+a_2(0,1,2)=0.$$
+因为这会推出：
+  $$\begin{cases}
+  a_1 = 0 \\
+  2a_1 + a_2 = 0 \\
+  3a_1 + 2a_2 = 0
+  \end{cases}$$
+显然仅当 $a_1=a_2=0$ 时成立。因此不存在非平凡方式将零向量 $0=(0,0,0)$ 表示为$(1,2,3)$和$(0,1,2)$的线性组合。</p>
+<p>根据约定，空向量集（$n=0$）总是线性无关的。</p>
+<p><strong><em>（subtle3 为什么这与定义一致？）</em></strong></p>
+<h3 id="section-2-3-3-3-">2.3.3.3 线性相关定理</h3>
+<p>如前所述，如果一个集合线性相关，则可移除它的一个元素而不影响其张成空间。</p>
+<blockquote>
+<p><strong>定理</strong>：设$S$为向量空间$V$的子集：
+ - 若$S$线性相关，则存在$v\in S$使得更小的集合$S-\{v\}$满足：
+   $$\text{span}(S-\{v\}) = \text{span}(S)$$
+ - 若$S$线性无关，则其任何真子集$S^{\prime}\subsetneq S$满足：
+   $$\text{span}(S^{\prime}) \subsetneq \text{span}(S)$$</p>
+</blockquote>
+<p><strong>证明</strong>：</p>
+<p><strong>第一部分：</strong></p>
+<p>若$S$线性相关，则存在$v\in S$使得$$\text{span}(S-\{v\}) = \text{span}(S).$$</p>
+<p>由于$S$线性相关，由定义知存在互异的$v_1,\ldots,v_n\in S$和不全为零的标量$a_1,\ldots,a_n$使得：
+  $$a_1v_1 + \cdots + a_nv_n = 0.$$</p>
+<p>已知至少有一个$a_j$非零，不失一般性地，可设$a_1\neq 0$（因为随时可通过重新排列将非零系数移到前面）。于是可解出$v_1$：
+  $$v_1 = -\frac{a_2}{a_1}v_2 - \cdots - \frac{a_n}{a_1}v_n.$$</p>
+<p>因此，任何包含$v_1$的表达式都可改写为仅含$v_2,\ldots,v_n$的形式。从而：</p>
+<p>$S$中任何含$v_1$的线性组合都可转化为 $S-\{v_1\}$ 中向量的线性组合。显然 $S-\{v_1\}$ 的线性组合自然也是$S$的线性组合。</p>
+<p>故得证：$\text{span}(S) = \text{span}(S-\{v_1\})$。</p>
+<p><strong>第二部分：</strong></p>
+<p>设$S\subseteq V$线性无关，$S^{\prime}\subsetneq S$为真子集。</p>
+<p>由于：</p>
+<ul>
+<li>显然有$\text{span}(S^{\prime})\subseteq\text{span}(S)$</li>
+<li>只需证明$\text{span}(S^{\prime})\neq\text{span}(S)$</li>
+</ul>
+<p>取$v\in S\setminus S^{\prime}$（因$S^{\prime}$是真子集，这样的$v$必存在）。由于：</p>
+<ul>
+<li>$v\in S$ ⇒ $v\in\text{span}(S)$</li>
+<li>假设$v\in\text{span}(S^{\prime})$，则存在$v_1,\ldots,v_n\in S^{\prime}$（均不同于$v$）使得：
+    $$v = a_1v_1 + \cdots + a_nv_n$$
+    即：
+    $$(-1)v + a_1v_1 + \cdots + a_nv_n = 0$$</li>
+<li>这与$S$线性无关矛盾（因$v$的系数$-1\neq 0$构成非平凡线性组合）</li>
+<li>故$v\notin\text{span}(S^{\prime})$，从而$\text{span}(S^{\prime})\subsetneq\text{span}(S)$ $\square$</li>
+</ul>
+<h2 id="section-2-3-4-">2.3.4 基和基的引理</h2>
+<blockquote>
+<p>向量空间$V$的<strong>基</strong>是指既张成$V$且线性无关的集合$S$。换句话说，基是张成整个$V$所需的最少向量集合——去掉其中任何一个向量，就无法张成整个$V$。</p>
+</blockquote>
+<p>例如：</p>
+<ul>
+<li>集合$\{(1,0,0),(0,1,0),(0,0,1)\}$是$\mathbf{R}^3$的基，因为它既张成$\mathbf{R}^3$又线性无关。</li>
+<li>集合$\{(1,0,0),(0,1,0),(0,0,1),(9,14,23)\}$虽然张成$\mathbf{R}^3$，但线性相关，因此不是基。</li>
+<li>集合$\{(1,0,0),(0,1,0)\}$线性无关，但不能张成整个$\mathbf{R}^3$，故不是基。</li>
+<li>集合$\{(1,0,0),(2,0,0)\}$既非线性无关，也不张成空间，显然不是基。</li>
+</ul>
+<p>类似地：</p>
+<ul>
+<li>$\{1,x,x^2,x^3\}$是$P_3(\mathbf{R})$的基。</li>
+<li>$\{1,x,1+x,x^2,x^3+x^3,x^3\}$不是基（虽然张成空间，但线性相关）。</li>
+<li>$\{1,x+x^2,x^3\}$线性无关，但不能张成整个空间。</li>
+</ul>
+<p>可以使用基以唯一的方式将向量表示为数字集。 </p>
+<blockquote>
+<p><strong>引理</strong>：设 $\{v_{1},v_{2},\ldots,v_{n}\}$ 是向量空间 $V$ 的一组基。那么 $V$ 中的每个向量 $v$ 都可以被唯一地写成形式：
+ $$v=a_{1}v_{1}+\ldots+a_{n}v_{n}$$
+其中 $a_{1},\ldots,a_{n}$ 是某些标量。</p>
+</blockquote>
+<p><strong>证明</strong>：</p>
+<p>1.<strong>存在性</strong>：</p>
+<p>因为 $\{v_{1},\ldots,v_{n}\}$ 是一组基，它必然张成 $V$，所以 $V$ 中的每个向量 $v$ 都可以写成形式 $a_{1}v_{1}+\ldots+a_{n}v_{n}$。接下来只需证明这种表示是唯一的。</p>
+<p>2.<strong>唯一性</strong>：</p>
+<p>假设（反证）某个向量 $v$ 有两种不同的表示： 
+   $$v =a_{1}v_{1}+\ldots+a_{n}v_{n}$$ 
+   $$v =b_{1}v_{1}+\ldots+b_{n}v_{n}$$ 
+其中 $a_{1},\ldots,a_{n}$ 是一组标量，$b_{1},\ldots,b_{n}$ 是另一组不同的标量。将两个等式相减，我们得到： 
+   $$(a_{1}-b_{1})v_{1}+\ldots+(a_{n}-b_{n})v_{n}=0.$$ 
+但是 $v_{1},\ldots,v_{n}$ 是线性无关的（基的定义），因此 $0$ 作为 $v_{1},\ldots,v_{n}$ 的线性组合的唯一表示是平凡表示，这意味着标量 $a_{1}-b_{1},\ldots,a_{n}-b_{n}$ 必须全为零。也就是说，两个表示 $a_{1}v_{1}+\ldots+a_{n}v_{n}$ 和 $b_{1}v_{1}+\ldots+b_{n}v_{n}$ 实际上是同一个表示。因此 $v$ 不可能有两种不同的表示，所以表示是唯一的。$\square$</p>
+<p><strong>示例</strong>：</p>
+<p>设$v_1$和$v_2$是 $\mathbb{R}^2$ 中的向量 $v_1:=(1,1)$ 和 $v_2:=(1,-1)$。可以验证这两个向量：
+  - 生成$\mathbb{R}^2$
+  - 线性无关</p>
+<p>因此构成一组基。</p>
+<p>任何向量（如$(3,5)$）都能唯一表示为：
+  $$(3,5)=4(1,1)-(1,-1)=4v_1-v_2$$</p>
+<p>虽然理论上可以用这种方式表示$\mathbb{R}^2$中所有向量，但由于这个基非标准(non-standard)，实际中较少使用。幸运的是，大多数向量空间都有"标准基"：</p>
+<ul>
+<li>
+<p>$\mathbb{R}^n$的标准基为 $\{e_1,e_2,\ldots,e_n\}$ ，其中$e_j$是第$j$个分量为1、其余为0的向量。例如$\mathbb{R}^3$的标准基是：
+  $$e_1:=(1,0,0),\ e_2:=(0,1,0),\ e_3:=(0,0,1)$$</p>
+</li>
+<li>
+<p>有限与无限维多项式空间的标准基：</p>
+</li>
+<li>
+<p>$P_n(\mathbb{R})$的标准基：
+  $\{1,x,x^2,\ldots,x^n\}$</p>
+</li>
+<li>
+<p>$P(\mathbb{R})$的标准基：无限集$\{1,x,x^2,\ldots\}$</p>
+</li>
+<li>
+<p>矩阵空间$M_{m\times n}(\mathbb{R})$的标准基可由所有"单元素为1、其余为0"的矩阵构成。</p>
+</li>
+</ul>
+<p>但是，某些空间（如连续函数空间$C(\mathbb{R})$）不存在合理定义的标准基。</p>
+<p>简介：finite-dimensional、infinite-dimensional，<strong>LADR 2.9</strong> : <em>A vector space is called finite-dimensional if some list of vectors in it spans
+ the space.</em></p>
+        </div>
+    </div>
+    
+    <script>
+        // 主题切换功能
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            const btn = document.querySelector('.theme-toggle');
+            if (document.body.classList.contains('dark-mode')) {
+                btn.textContent = '☀️ 切换亮色模式';
+                localStorage.setItem('theme', 'dark');
+            } else {
+                btn.textContent = '🌙 切换暗色模式';
+                localStorage.setItem('theme', 'light');
+            }
+            
+            // 重新渲染数学公式
+            if (MathJax.typeset) {
+                MathJax.typeset();
+            }
+        }
+        
+        // 从本地存储加载主题偏好
+        document.addEventListener('DOMContentLoaded', function() {
+            if (localStorage.getItem('theme') === 'dark') {
+                document.body.classList.add('dark-mode');
+                document.querySelector('.theme-toggle').textContent = '☀️ 切换亮色模式';
+            }
+            
+            // 目录滚动跟踪
+            const tocLinks = document.querySelectorAll('#toc a');
+            const contentSections = document.querySelectorAll('h1, h2, h3, h4');
+            
+            // 防抖函数优化性能
+            let isScrolling;
+            function updateActiveToc() {
+                let currentSection = '';
+                const scrollPosition = window.scrollY + 150; // 增加偏移量
+                
+                contentSections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    if (scrollPosition >= sectionTop) {
+                        currentSection = section.id;
+                    }
+                });
+                
+                tocLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href') === '#' + currentSection) {
+                        link.classList.add('active');
+                    }
+                });
+                
+                // 添加高亮效果
+                contentSections.forEach(section => {
+                    section.classList.remove('highlight');
+                    if (section.id === currentSection) {
+                        section.classList.add('highlight');
+                    }
+                });
+            }
+            
+            // 优化滚动性能
+            window.addEventListener('scroll', function() {
+                window.clearTimeout(isScrolling);
+                isScrolling = setTimeout(updateActiveToc, 50);
+            });
+            
+            // 初始更新
+            updateActiveToc();
+            
+            // 平滑滚动
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        window.scrollTo({
+                            top: target.offsetTop - 100,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+            
+            // 修复数学公式渲染问题
+            document.addEventListener('DOMContentLoaded', function() {
+                // 监听MathJax加载完成
+                MathJax.startup.promise.then(() => {
+                    // 修复矩阵和对齐环境
+                    document.querySelectorAll('.MathJax_Display').forEach(el => {
+                        el.style.overflowX = 'auto';
+                        el.style.textAlign = 'center';
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+    
