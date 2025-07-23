@@ -24,13 +24,15 @@ body {
 }
 
 /* 北大风格页眉 */
+/* 修改.pku-header样式，移除sticky定位 */
 .pku-header {
     background: var(--pku-red);
     color: white;
-    padding: 1rem 0;
+    padding: 0.7rem 0;
     box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-    position: sticky;
-    top: 0;
+    /* 移除以下两行 */
+    /* position: sticky;
+    top: 0; */
     z-index: 1000;
 }
 
@@ -48,7 +50,7 @@ nav ul {
 
 /* 主菜单横向排列 */
 .nav-main {
-    display: flex;
+    display: block; /* 改为块级元素实现竖排 */
     gap: 1.5rem; /* 菜单项间距 */
     align-items: center;
     padding: 0.5rem 1rem;
@@ -78,9 +80,9 @@ nav a:hover {
     display: flex;
     flex-direction: column;
     gap: 0.3rem;
-    margin-left: 1rem; /* 添加缩进表示层级 */
-    margin-top: 0.3rem;
-    background: rgba(255,255,255,0.1); /* 子菜单稍微不同的背景 */
+    width: auto !important; /* 取消宽度限制 */
+    margin-left: 1rem; /* 增加缩进 */
+    background: rgba(255,255,255,0.1);
 }
 
 /* 有子菜单的项添加指示图标 */
@@ -133,17 +135,21 @@ nav a:hover {
 
 .pku-hero {
     background: url('/assets/images/math-bg.jpg');
-    background-size: cover;
+    background-size: contain;
     background-position: center;
     color: white;
-    padding: 4rem 0;
+    padding: 3.2rem 0;
     text-align: center;
-    margin: 2rem 0;
+    margin: 0 auto 0rem; /* 上边距为0，与header无缝连接 */
     border-radius: 5px;
-    
-    /* 图片比例 4:3 */
-    aspect-ratio: 4/3;
-    width: 100%;
+    /* 图片比例 16:9 */
+    aspect-ratio: 16/9;
+    width: 80%;
+}
+
+.hero-content p {
+    font-size: 1.1rem; /* 增大字体 */
+    white-space: nowrap; /* 防止文字换行 */
 }
 
 .math-decoration {

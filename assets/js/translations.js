@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const langButtons = document.querySelectorAll('.lang-btn');
     
     // 初始化语言设置（尝试从本地存储获取，默认为中文）
-    let currentLang = localStorage.getItem('preferredLang') || 'zh';
+    let currentLang = localStorage.getItem('preferredLang') || 'en';
     
     // 设置初始激活按钮
     document.querySelector(`.lang-btn[data-lang="${currentLang}"]`).classList.add('active');
