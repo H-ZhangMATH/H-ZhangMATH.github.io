@@ -22,11 +22,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 element.style.transition = 'opacity 0.3s ease';
                 
                 setTimeout(() => {
-                    if (element.tagName === 'A' || element.tagName === 'SPAN' || element.tagName === 'EM') {
-                        element.textContent = translation;
-                    } else {
                         element.innerHTML = translation;
-                    }
                     
                     // 恢复不透明度
                     element.style.opacity = '1';

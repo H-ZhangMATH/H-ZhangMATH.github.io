@@ -36,26 +36,32 @@ body {
 }
 
 .header-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
     padding: 0 20px;
-    flex-wrap: nowrap; /* 防止换行 */
+    position: relative;
 }
 
-.header-title h1 {
+/* 核心解决方案 */
+.header-center {
+    display: inline-block; /* 使容器根据内容自适应 */
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.header-title {
+    display: inline-block; /* 与按钮同行 */
     margin: 0;
-    font-size: 1.4rem; 
+    font-size: 1.4rem;
     line-height: 1.2;
-    white-space: nowrap;
+    vertical-align: middle; /* 垂直对齐 */
 }
 
 .header-lang {
-    display: flex;
-    gap: 0.5rem;
-    align-items: center;
-    white-space: nowrap; /* 防止按钮换行 */
-    margin-left: 1rem; /* 添加左边距 */
+    display: inline-block; /* 与标题同行 */
+    margin-left: 1rem; /* 与标题间距 */
+    vertical-align: middle; /* 垂直对齐 */
 }
 
 .pku-logo {
@@ -322,8 +328,18 @@ address a:hover {
         content: " →"; /* 在移动设备上使用箭头更直观 */
     }
 }
-    
-    .pku-hero {
-        padding: 2rem 0;
+
+@media (max-width: 768px) {
+    .header-title {
+        font-size: 1.2rem;
     }
-}
+    .header-lang {
+        margin-left: 0.5rem;
+    }
+    .lang-btn {
+        font-size: 0.8rem;
+        padding: 0.1rem 0.3rem;
+    }
+    .hero-content {
+        top: 10%; /* 移动端减少顶部间距 */
+    }
